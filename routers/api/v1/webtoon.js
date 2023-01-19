@@ -1,8 +1,7 @@
 import express from "express"
-import axios from "axios"
 import cheerio from "cheerio"
 import url from "url"
-
+import Request from "../../../modules/request.js"
 
 const router = express.Router()
 
@@ -32,15 +31,9 @@ router.get('/', async (req, res) => {
           res.json({is_error:true, message:"검색할 키워드가 지정되지 않았습니다!"})
           return
         }
-  
-        const REQ_RES = await axios.get(`https://comic.naver.com/search?keyword=${SEARCH_KEYWORD}`)
-        if(REQ_RES.status != 200)
-        {
-          res.json({is_error:true, message:"서버 통신도중 에러가 발생했습니다!"})
-          return
-        }
 
-        const $ = cheerio.load(REQ_RES.data)
+        const HTML_RES = await Request.get_For_Html(`https://comic.naver.com/search?keyword=${SEARCH_KEYWORD}`)
+        const $ = cheerio.load(HTML_RES)
         const TITLE_INFOS = $("div#content div.resultBox:nth-child(2) ul.resultList h5 a")
               .toArray()
               .map((e) => {
