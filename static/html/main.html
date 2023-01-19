@@ -8,6 +8,8 @@
           <input type="text"/>
           <input type="submit" value="웹툰명 검색"/>
         </form>
+        <table id="title_result_table">
+        </table>
     </body>
     <script>
       document.querySelector("#title_search_form").addEventListener("submit", async (e) => {
@@ -27,7 +29,23 @@
             return
           }
 
-          console.log(RES.result)
+          const SEARCH_RESULTS = RES.result
+          if(SEARCH_RESULTS.length == 0)
+          {
+            alert("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
+            return
+          }
+
+          const TITLE_RESULT_TABLE_SEL = document.querySelector("#title_result_table")
+          const SEARCH_RESULT_HTMLS = SEARCH_RESULTS.map((search_result) => 
+            `<tr><td><div title_id="${search_result.title_id}">${search_result.title}</div></td></tr>`)
+          TITLE_RESULT_TABLE_SEL.innerHTML = SEARCH_RESULT_HTMLS.join('\n')
+
+          Object.values(document.querySelectorAll("#title_result_table td div")).forEach((sel) => {
+              sel.addEventListener("click", (e) => {
+                  alert(`[MOCK] ${e.path[0].textContent}(${e.path[0].getAttribute("title_id")}) 에 대한 세부 화수 조회 결과가 나와야 함`)
+              })
+          })
       })
 
       class Request
