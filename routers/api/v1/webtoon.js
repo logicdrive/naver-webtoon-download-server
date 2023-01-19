@@ -6,7 +6,7 @@ const router = express.Router()
 router.get('/', (req, res) => {
   const SEARCH_TYPES_TO_CHECK = ["title", "image", "index"]
   
-  const {type:SEARCH_TYPE} = req.query
+  const {type:SEARCH_TYPE, keyword:SEARCH_KEYWORD} = req.query
   if(SEARCH_TYPE == null)
   {
     res.json({is_error:true, message:"요청하는 검색 타입이 지정되지 않았습니다!"})
@@ -21,7 +21,13 @@ router.get('/', (req, res) => {
   switch(SEARCH_TYPE)
   {
     case "title" :
-      res.json({is_error:false, message:"[MOCK] 웹툰명 검색 결과를 반환시킴"})
+      if(SEARCH_KEYWORD == null)
+      {
+        res.json({is_error:true, message:"검색할 키워드가 지정되지 않았습니다!"})
+        return
+      }
+      
+      res.json({is_error:false, message:`[MOCK] ${SEARCH_KEYWORD} 키워드에 대한 웹툰명 검색 결과를 반환시킴`})
       return
 
     case "index" :
