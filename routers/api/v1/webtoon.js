@@ -8,15 +8,8 @@ import Request_Check from "../../../modules/request_check.js"
 async function router_callback(req, res)
 {
   Request_Check.Query_para_is_null(req, [["type", "검색 타입"], ["keyword", "검색어"]])
-    
-  const SEARCH_TYPES_TO_CHECK = ["title", "image", "index"]
-  
+  Request_Check.Query_para_is_contatins(req, [["type", "검색 타입", ["title", "image", "index"]]])
   const {type:SEARCH_TYPE, keyword:SEARCH_KEYWORD} = req.query
-  if(!SEARCH_TYPES_TO_CHECK.includes(SEARCH_TYPE))
-  {
-    res.json({is_error:true, message:"검색타입이 유효하지 않습니다!"})
-    return
-  }
    
   switch(SEARCH_TYPE)
   {
