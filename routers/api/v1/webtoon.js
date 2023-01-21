@@ -1,12 +1,12 @@
 import express from "express"
 import Wrap from "../../../modules/wrap.js"
-import Request_Check from "../../../modules/request_check.js"
+import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 
 async function router_callback(req, res)
 {
-  Request_Check.Query_para_is_null(req, [["type", "검색 타입"], ["keyword", "검색어"]])
-  Request_Check.Query_para_is_contatins(req, [["type", "검색 타입", ["title", "image", "index"]]])
+  Params_Check.Para_is_null(req.query, ["type", "keyword"])
+  Params_Check.Para_is_contatins(req.query, [["type", ["title", "image", "index"]]])
   
   const {type:SEARCH_TYPE, keyword:SEARCH_KEYWORD} = req.query
   switch(SEARCH_TYPE)
