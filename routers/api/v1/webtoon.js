@@ -3,7 +3,7 @@ import Wrap from "../../../modules/wrap.js"
 import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 
-async function router_callback(req, res)
+async function get_Router_callback(req, res)
 {
   Params_Check.Para_is_null(req.query, ["type", "keyword"])
   Params_Check.Para_is_contatins(req.query, [["type", ["title", "image", "index"]]])
@@ -26,9 +26,9 @@ async function router_callback(req, res)
   }  
 }
 
-router_callback = Wrap.Wrap_With_Try_Res_Promise(router_callback)
+get_Router_callback = Wrap.Wrap_With_Try_Res_Promise(get_Router_callback)
 
 const router = express.Router()
-router.get('/', router_callback)
+router.get('/', get_Router_callback)
 
 export default router
