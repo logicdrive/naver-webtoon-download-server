@@ -8,7 +8,7 @@ class Wrap
       try { await async_callback(req, res) }
       catch(e) {
         console.log(e)
-        res.json({is_error:true, message:"서버에서 처리 도중 에러가 발생함!"})
+        res.json({is_error:true, message:e.message})
       }
     }
   }   
