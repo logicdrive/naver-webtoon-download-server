@@ -1,4 +1,11 @@
-document.querySelector("#title_search_form").addEventListener("submit", async (e) => {
+function main()
+{
+    document.querySelector("#title_search_form").onsubmit = on_Submit_title_Search_Form
+}
+
+/** 웹툰 제목을 검색할 경우, 그에 대한 검색결과를 출력하기 위해서 */
+async function on_Submit_title_Search_Form(e)
+{
     e.preventDefault()
     
     const SEARCH_TITLE = document.querySelector("#title_search_form input[type='text']").value
@@ -28,8 +35,14 @@ document.querySelector("#title_search_form").addEventListener("submit", async (e
     TITLE_RESULT_TABLE_SEL.innerHTML = SEARCH_RESULT_HTMLS.join('\n')
 
     Object.values(document.querySelectorAll("#title_result_table td div")).forEach((sel) => {
-        sel.addEventListener("click", (e) => {
-            alert(`[MOCK] ${e.path[0].textContent}(${e.path[0].getAttribute("title_id")}) 에 대한 세부 화수 조회 결과가 나와야 함`)
-        })
+        sel.onclick = on_Click_Searched_Webtoon_Title
     })
-})
+}
+
+/** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
+async function on_Click_Searched_Webtoon_Title(e)
+{
+  alert(`[MOCK] ${e.path[0].textContent}(${e.path[0].getAttribute("title_id")}) 에 대한 세부 화수 조회 결과가 나와야 함`)
+}
+
+main()
