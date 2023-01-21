@@ -3,21 +3,15 @@ import cheerio from "cheerio"
 import url from "url"
 import Request from "../../../modules/request.js"
 import Wrap from "../../../modules/wrap.js"
+import Request_Check from "../../../modules/request_check.js"
 
-const router = express.Router()
-
-
-router.get('/', router_callback)
 async function router_callback(req, res)
 {
+  Request_Check.Query_para_is_null(req, [["type", "검색 타입"], ["keyword", "검색어"]])
+    
   const SEARCH_TYPES_TO_CHECK = ["title", "image", "index"]
   
   const {type:SEARCH_TYPE, keyword:SEARCH_KEYWORD} = req.query
-  if(SEARCH_TYPE == null)
-  {
-    res.json({is_error:true, message:"요청하는 검색 타입이 지정되지 않았습니다!"})
-    return
-  }
   if(!SEARCH_TYPES_TO_CHECK.includes(SEARCH_TYPE))
   {
     res.json({is_error:true, message:"검색타입이 유효하지 않습니다!"})
@@ -27,12 +21,6 @@ async function router_callback(req, res)
   switch(SEARCH_TYPE)
   {
     case "title" :
-      if(SEARCH_KEYWORD == null)
-      {
-        res.json({is_error:true, message:"검색할 키워드가 지정되지 않았습니다!"})
-        return
-      }
-
       const HTML_RES = await Request.get_For_Html(`https://comic.naver.com/search?keyword=${SEARCH_KEYWORD}`)
       const $ = cheerio.load(HTML_RES)
       const TITLE_INFOS = $("div#content div.resultBox:nth-child(2) ul.resultList h5 a")
@@ -54,7 +42,10 @@ async function router_callback(req, res)
       return
   }  
 }
+
 router_callback = Wrap.Wrap_With_Try_Res_Promise(router_callback)
 
+const router = express.Router()
+router.get('/', router_callback)
 
 export default router
