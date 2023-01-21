@@ -15,14 +15,7 @@ async function on_Submit_title_Search_Form(e)
       return
     }
 
-    const RES = await Request.JSON_Request(`/api/v1/webtoon?type=title&keyword=${SEARCH_TITLE}`, "GET")
-    if(RES.is_error)
-    {
-      alert(`에러가 발생했습니다!\n${RES.message}`)
-      return
-    }
-
-    const SEARCH_RESULTS = RES.result
+    const SEARCH_RESULTS = await Rest_Api.Search_Webtoon_Titles(SEARCH_TITLE)
     if(SEARCH_RESULTS.length == 0)
     {
       alert("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
