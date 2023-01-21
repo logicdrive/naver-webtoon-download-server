@@ -3,6 +3,7 @@ import Wrap from "../../../modules/wrap.js"
 import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 
+/** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
 {
   Params_Check.Para_is_null(req.query, ["type", "keyword"])
