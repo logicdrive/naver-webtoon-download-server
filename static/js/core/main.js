@@ -8,29 +8,34 @@ async function on_Submit_title_Search_Form(e)
 {
     e.preventDefault()
     
-    const SEARCH_TITLE = document.querySelector("#title_search_form input[type='text']").value
-    if(SEARCH_TITLE.length == 0) throw new Error("검색할 웹툰명을 입력해주세요!")
+    const TITLE_TO_SEARCH = document.querySelector("#title_search_form input[type='text']").value
+    if(TITLE_TO_SEARCH.length == 0) throw new Error("검색할 웹툰명을 입력해주세요!")
 
-    const SEARCH_RESULTS = await Rest_Api.Search_Webtoon_Titles(SEARCH_TITLE)
-    if(SEARCH_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
+    const TITLE_RESULTS = await Rest_Api.Search_Webtoon_Titles(TITLE_TO_SEARCH)
+    if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
-    Update_Title_Results_UI(SEARCH_RESULTS)
+    Update_Title_Results_UI(TITLE_RESULTS)
     Element.add_On_Click_Trigger("#title_result_table td div", on_Click_Searched_Webtoon_Title)
 }
 
 /** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
-function Update_Title_Results_UI(search_results)
+function Update_Title_Results_UI(title_results)
 {
-  const TITLE_RESULT_TABLE_SEL = document.querySelector("#title_result_table")
-  const SEARCH_RESULT_HTMLS = search_results.map((search_result) => 
-    `<tr><td><div title_id="${search_result.title_id}">${search_result.title}</div></td></tr>`)
-  TITLE_RESULT_TABLE_SEL.innerHTML = SEARCH_RESULT_HTMLS.join('\n')
+  const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
+    `<tr><td><div title_id="${title_result.title_id}">${title_result.title}</div></td></tr>`)
+  document.querySelector("#title_result_table").innerHTML = TITLE_RESULT_HTMLS.join('\n')
 }
 
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
 async function on_Click_Searched_Webtoon_Title(e)
 {
-  alert(`[MOCK] ${e.path[0].textContent}(${e.path[0].getAttribute("title_id")}) 에 대한 세부 화수 조회 결과가 나와야 함`)
+  const TITLE_ID_KEYWORD = e.path[0].getAttribute("title_id")
+  const MAX_INDEX = Number((await Rest_Api.request_With_Error_Check(`/api/v1/webtoon?type=index&keyword=${TITLE_ID_KEYWORD}`, "GET")).result)
+
+  const range = (start, stop, step = 1) => Array(Math.ceil((stop - start) / step)).fill(start).map((x, y) => x + y * step)
+  const INDEX_RESULT_HTMLS = range(1, MAX_INDEX+1).map((index) => 
+    `<tr><td><div title_id="${TITLE_ID_KEYWORD}" index="${index}">${index}화</div></td></tr>`)
+  document.querySelector("#index_result_table").innerHTML = INDEX_RESULT_HTMLS.join('\n')
 }
 
 on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)

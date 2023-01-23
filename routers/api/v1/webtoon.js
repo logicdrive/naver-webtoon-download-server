@@ -3,6 +3,10 @@ import Wrap from "../../../modules/wrap.js"
 import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 
+import cheerio from "cheerio"
+import url from "url"
+import Request from "../../../modules/request.js"
+
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
 {
@@ -18,7 +22,11 @@ async function get_Router_callback(req, res)
       return
 
     case "index" :
-      res.json({is_error:false, message:"[MOCK] 특정 웹툰에 대한 목차 목록을 반환시킴"})
+      const HTML_RES = await Request.get_For_Html(`https://comic.naver.com/webtoon/list?titleId=${SEARCH_KEYWORD}`)
+      const $ = cheerio.load(HTML_RES)
+      const INDEX_INFOS = $("div#content table.viewList tr td.title a").toArray()
+      const MAX_INDEX = url.parse($(INDEX_INFOS[0]).attr("href"), true).query.no
+      res.json({is_error:false, result:MAX_INDEX})
       return
     
     case "image" :
