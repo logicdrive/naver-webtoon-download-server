@@ -32,8 +32,7 @@ async function on_Click_Searched_Webtoon_Title(e)
   const TITLE_ID_KEYWORD = e.path[0].getAttribute("title_id")
   const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_KEYWORD)
 
-  const range = (start, stop, step = 1) => Array(Math.ceil((stop - start) / step)).fill(start).map((x, y) => x + y * step)
-  const INDEX_RESULT_HTMLS = range(1, MAX_INDEX+1).map((index) => 
+  const INDEX_RESULT_HTMLS = Iter.Range(1, MAX_INDEX+1).map((index) => 
     `<tr><td><div title_id="${TITLE_ID_KEYWORD}" index="${index}">${index}화</div></td></tr>`)
   document.querySelector("#index_result_table").innerHTML = INDEX_RESULT_HTMLS.join('\n')
 }
