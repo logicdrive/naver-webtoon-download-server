@@ -6,8 +6,8 @@ import Webtoon_Api from "../../../modules/webtoon_api.js"
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
 {
-  Params_Check.Para_is_null(req.query, ["type", "keyword"])
-  Params_Check.Para_is_contatins(req.query, [["type", ["title", "image", "index"]]])
+  Params_Check.Para_is_null_or_empty(req.query, ["type", "keyword"])
+  Params_Check.Para_is_contains(req.query, [["type", ["title", "image", "index"]]])
   
   const {type:SEARCH_TYPE, keyword:SEARCH_KEYWORD} = req.query
   switch(SEARCH_TYPE)
