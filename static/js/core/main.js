@@ -30,7 +30,7 @@ function Update_Title_Results_UI(title_results)
 async function on_Click_Searched_Webtoon_Title(e)
 {
   const TITLE_ID_KEYWORD = e.path[0].getAttribute("title_id")
-  const MAX_INDEX = Number((await Rest_Api.request_With_Error_Check(`/api/v1/webtoon?type=index&keyword=${TITLE_ID_KEYWORD}`, "GET")).result)
+  const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_KEYWORD)
 
   const range = (start, stop, step = 1) => Array(Math.ceil((stop - start) / step)).fill(start).map((x, y) => x + y * step)
   const INDEX_RESULT_HTMLS = range(1, MAX_INDEX+1).map((index) => 

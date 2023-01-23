@@ -8,6 +8,13 @@ class Rest_Api
     return REQ_RESULT.result
   }
 
+  /** 특정 웹툰에 대한 최대 목차를 반환시키기 위해서 */
+  static async Search_Max_Index(title_id)
+  {
+    const REQ_RESULT = await Rest_Api.request_With_Error_Check(`/api/v1/webtoon?type=index&keyword=${title_id}`, "GET")
+    return Number(REQ_RESULT.result)
+  }
+
   /** 서버 응답을 받기전에 에러여부를 확인해서 예외를 일으키기 위해서 */
   static async request_With_Error_Check(url, request_type, json_body={})
   {
