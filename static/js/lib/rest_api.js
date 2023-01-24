@@ -11,7 +11,7 @@ class Rest_Api
   /** 특정 웹툰에 대한 최대 목차를 반환시키기 위해서 */
   static async Search_Max_Index(title_id)
   {
-    const REQ_RESULT = await Rest_Api.request_With_Error_Check(`/api/v1/webtoon?type=index&keyword=${title_id}`, "GET")
+    const REQ_RESULT = await Rest_Api.request_With_Error_Check(`/api/v1/webtoon?type=index&title_id=${title_id}`, "GET")
     return Number(REQ_RESULT.result)
   }
 

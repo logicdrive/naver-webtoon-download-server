@@ -1,6 +1,7 @@
 function main()
 {
     document.querySelector("#title_search_form").onsubmit = on_Submit_title_Search_Form
+    document.querySelector("#zip_download_button").onclick = on_Click_Zip_Download_Button
 }
 
 /** 웹툰 제목을 검색할 경우, 그에 대한 검색결과를 출력하기 위해서 */
@@ -29,15 +30,32 @@ function Update_Title_Results_UI(title_results)
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
 async function on_Click_Searched_Webtoon_Title(e)
 {
-  const TITLE_ID_KEYWORD = e.path[0].getAttribute("title_id")
-  const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_KEYWORD)
+  const TITLE_ID_TO_SEARCH = e.path[0].getAttribute("title_id")
+  const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_TO_SEARCH)
 
   const INDEX_RESULT_HTMLS = Iter.Range(1, MAX_INDEX+1).map((index) => 
-    `<tr><td><div title_id="${TITLE_ID_KEYWORD}" index="${index}">${index}화</div></td></tr>`)
+    `<tr><td><div><input type="checkbox" class="webtoon_index_checkbox" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</div></td></tr>`)
   document.querySelector("#index_result_table").innerHTML = INDEX_RESULT_HTMLS.join('\n')
+}
+
+async function on_Click_Zip_Download_Button(e)
+{
+    const CHECKED_WEBTOON_INFOS = document.querySelectorAll("input.webtoon_index_checkbox:checked")
+    if(CHECKED_WEBTOON_INFOS.length == 0)
+      throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
+    if(CHECKED_WEBTOON_INFOS.length > 1)
+      throw new Error("여러개를 다운 받는 기능은 아직 미구현입니다 !")
+  
+    const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(document.querySelectorAll("input.webtoon_index_checkbox:checked")).map((sel) => {
+        return {title_id:sel.getAttribute("title_id"), index:sel.getAttribute("index")}
+    })
+
+    const REQ_RESULT = await Rest_Api.request_With_Error_Check("/api/v1/webtoon", "POST", {"webtoon_infos":WEBTOON_INFOS_TO_DOWNLOAD})
+    alert(REQ_RESULT.message)
 }
 
 on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
 on_Click_Searched_Webtoon_Title = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
+on_Click_Zip_Download_Button = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
        
 main()
