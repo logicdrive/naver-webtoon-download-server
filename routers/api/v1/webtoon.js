@@ -4,6 +4,7 @@ import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 
 import Element from "../../../modules/element.js"
+import axios from "axios"
 
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
@@ -38,13 +39,22 @@ async function post_Router_callback(req, res)
   Params_Check.Para_is_null_or_empty(req.body, ["webtoon_infos"])
   const {webtoon_infos:WEBTOON_INFOS} = req.body
 
+  let IMAGE_DATA = null
   for(let webtoon_info of WEBTOON_INFOS)
   {
     const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${webtoon_info.title_id}&no=${webtoon_info.index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
     const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
-    console.log(IMAGE_LINKS)
+    
+    IMAGE_DATA = (await axios.get(IMAGE_LINKS[0], {
+                       headers: {
+                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
+                       }
+                      })).data
   }
+  if(IMAGE_DATA==null)
+    throw new Error("이미지 데이터 받아오기에 실패함 !")
 
+  console.log(IMAGE_DATA)
   res.json({is_error:false, message:"[MOCK] 웹툰 이미지에 대한 zip 파일을 다운로드 시킴"})
 }
 
