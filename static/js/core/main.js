@@ -30,7 +30,7 @@ function Update_Title_Results_UI(title_results)
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
 async function on_Click_Searched_Webtoon_Title(e)
 {
-  const TITLE_ID_TO_SEARCH = e.srcElement.getAttribute("title_id")
+  const TITLE_ID_TO_SEARCH = e.target.getAttribute("title_id")
   const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_TO_SEARCH)
 
   const INDEX_RESULT_HTMLS = Iter.Range(1, MAX_INDEX+1).map((index) => 
