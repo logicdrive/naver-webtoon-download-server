@@ -30,7 +30,7 @@ function Update_Title_Results_UI(title_results)
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
 async function on_Click_Searched_Webtoon_Title(e)
 {
-  const TITLE_ID_TO_SEARCH = e.path[0].getAttribute("title_id")
+  const TITLE_ID_TO_SEARCH = e.srcElement.getAttribute("title_id")
   const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_TO_SEARCH)
 
   const INDEX_RESULT_HTMLS = Iter.Range(1, MAX_INDEX+1).map((index) => 
@@ -50,8 +50,18 @@ async function on_Click_Zip_Download_Button(e)
         return {title_id:sel.getAttribute("title_id"), index:sel.getAttribute("index")}
     })
 
-    const REQ_RESULT = await Rest_Api.request_With_Error_Check("/api/v1/webtoon", "POST", {"webtoon_infos":WEBTOON_INFOS_TO_DOWNLOAD})
-    alert(REQ_RESULT.message)
+    const RES = await fetch("/api/v1/webtoon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body : JSON.stringify({"webtoon_infos":WEBTOON_INFOS_TO_DOWNLOAD})
+    })
+    const IMAGE_DATA_URL = (await RES.json()).data_url
+
+    const A_TAG = document.createElement('a')
+    A_TAG.setAttribute("href", IMAGE_DATA_URL)
+    A_TAG.setAttribute("download", "download.jpg")
+    document.body.appendChild(A_TAG)
+    A_TAG.click()
 }
 
 on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)

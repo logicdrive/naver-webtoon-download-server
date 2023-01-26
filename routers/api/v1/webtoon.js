@@ -46,16 +46,18 @@ async function post_Router_callback(req, res)
     const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
     
     IMAGE_DATA = (await axios.get(IMAGE_LINKS[0], {
+                      responseType: 'arraybuffer',
                        headers: {
-                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
+                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
                        }
-                      })).data
+                      })).data   
   }
   if(IMAGE_DATA==null)
     throw new Error("이미지 데이터 받아오기에 실패함 !")
 
-  console.log(IMAGE_DATA)
-  res.json({is_error:false, message:"[MOCK] 웹툰 이미지에 대한 zip 파일을 다운로드 시킴"})
+  const IMAGE_DATA_BASE64 = Buffer.from(IMAGE_DATA, "binary").toString('base64')
+  const IMAGE_DATA_URL = "data:image/jpg;base64," + IMAGE_DATA_BASE64
+  res.json({is_error:false, data_url:IMAGE_DATA_URL})
 }
 
 get_Router_callback = Wrap.Wrap_With_Try_Res_Promise(get_Router_callback)
