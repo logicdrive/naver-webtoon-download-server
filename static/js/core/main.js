@@ -53,13 +53,9 @@ async function on_Click_Zip_Download_Button(e)
       headers: { "Content-Type": "application/json" },
       body : JSON.stringify({"webtoon_infos":WEBTOON_INFOS_TO_DOWNLOAD})
     })
+  
     const ZIP_DATA_URL = (await RES.json()).data_url
-
-    const A_TAG = document.createElement('a')
-    A_TAG.setAttribute("href", ZIP_DATA_URL)
-    A_TAG.setAttribute("download", "download.zip")
-    document.body.appendChild(A_TAG)
-    A_TAG.click()
+    Browser.download_File(ZIP_DATA_URL, "download.zip")
 }
 
 on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
