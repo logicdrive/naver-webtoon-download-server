@@ -50,13 +50,7 @@ async function on_Click_Zip_Download_Button(e)
         return {title_id:sel.getAttribute("title_id"), index:sel.getAttribute("index")}
     })
 
-    const RES = await fetch("/api/v1/webtoon", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body : JSON.stringify({"webtoon_infos":WEBTOON_INFOS_TO_DOWNLOAD})
-    })
-  
-    const ZIP_DATA_URL = (await RES.json()).data_url
+    const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
     Browser.download_File(ZIP_DATA_URL, "download.zip")
 }
 on_Click_Zip_Download_Button = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)

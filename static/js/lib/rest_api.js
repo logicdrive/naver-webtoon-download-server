@@ -15,6 +15,13 @@ class Rest_Api
     return Number(REQ_RESULT.result)
   }
 
+  /** 전달된 웹툰 정보들을 바탕으로 .zip로 크롤링된 DATA URL을 얻기 위해서 */
+  static async data_Url_From_Webtoons_Zip(webtoon_infos)
+  {
+    const REQ_RESULT = await Rest_Api.request_With_Error_Check("/api/v1/webtoon", "POST", {"webtoon_infos":webtoon_infos})
+    return REQ_RESULT.data_url
+  }
+
   /** 서버 응답을 받기전에 에러여부를 확인해서 예외를 일으키기 위해서 */
   static async request_With_Error_Check(url, request_type, json_body={})
   {
