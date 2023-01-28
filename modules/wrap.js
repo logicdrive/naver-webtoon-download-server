@@ -2,7 +2,7 @@
 class Wrap
 {
   /** 특정 함수를 Try ~ Catch ~ Res 형태로 감싸기 위해서 */
-  static Wrap_With_Try_Res_Promise(async_callback)
+  static wrap_With_Try_Res_Promise(async_callback)
   {
     return async (req, res) => {
       try { await async_callback(req, res) }

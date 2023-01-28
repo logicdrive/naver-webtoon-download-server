@@ -13,14 +13,14 @@ import { exec } from "child_process"
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
 {
-  Params_Check.Para_is_null_or_empty(req.query, ["type"])
-  Params_Check.Para_is_contains(req.query, [["type", ["title", "index"]]])
+  Params_Check.para_is_null_or_empty(req.query, ["type"])
+  Params_Check.para_is_contains(req.query, [["type", ["title", "index"]]])
   const {type:SEARCH_TYPE} = req.query
   
   switch(SEARCH_TYPE)
   {
     case "title" :
-      Params_Check.Para_is_null_or_empty(req.query, ["keyword"])
+      Params_Check.para_is_null_or_empty(req.query, ["keyword"])
       const {keyword:KEYWORD} = req.query
       
       const TITLE_INFOS = await Webtoon_Api.searched_Titles(KEYWORD)
@@ -28,7 +28,7 @@ async function get_Router_callback(req, res)
       return
 
     case "index" :
-      Params_Check.Para_is_null_or_empty(req.query, ["title_id"])
+      Params_Check.para_is_null_or_empty(req.query, ["title_id"])
       const {title_id:TITLE_ID} = req.query
       
       const MAX_INDEX = await Webtoon_Api.max_Index(TITLE_ID)
@@ -36,7 +36,7 @@ async function get_Router_callback(req, res)
       return
   }  
 }
-get_Router_callback = Wrap.Wrap_With_Try_Res_Promise(get_Router_callback)
+get_Router_callback = Wrap.wrap_With_Try_Res_Promise(get_Router_callback)
 
 function execute_Shell_Command(shell_command)
 {
@@ -57,7 +57,7 @@ function sleep(ms) {
 /** 유저가 요청한 특정 웹툰 화수에 대한 다운로드 서비스를 제공하기 위해서 */
 async function post_Router_callback(req, res)
 {
-  Params_Check.Para_is_null_or_empty(req.body, ["webtoon_infos"])
+  Params_Check.para_is_null_or_empty(req.body, ["webtoon_infos"])
   const {webtoon_infos:WEBTOON_INFOS} = req.body
 
   const FOLDER_UUID = UUID.get_UUID()
@@ -102,7 +102,7 @@ async function post_Router_callback(req, res)
   fs.rmSync(ZIP_PATH, {force: true})
   res.json({is_error:false, data_url:ZIP_DATA_URL})
 }
-post_Router_callback = Wrap.Wrap_With_Try_Res_Promise(post_Router_callback)
+post_Router_callback = Wrap.wrap_With_Try_Res_Promise(post_Router_callback)
 
 const router = express.Router()
 router.get('/', get_Router_callback)

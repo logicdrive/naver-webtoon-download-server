@@ -12,13 +12,13 @@ async function on_Submit_title_Search_Form(e)
   const TITLE_TO_SEARCH = document.querySelector("#title_search_form input[type='text']").value
   if(TITLE_TO_SEARCH.length == 0) throw new Error("검색할 웹툰명을 입력해주세요!")
 
-  const TITLE_RESULTS = await Rest_Api.Search_Webtoon_Titles(TITLE_TO_SEARCH)
+  const TITLE_RESULTS = await Rest_Api.search_Webtoon_Titles(TITLE_TO_SEARCH)
   if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
   Update_Title_Results_UI(TITLE_RESULTS)
   Element.add_On_Click_Trigger("#title_result_table td div", on_Click_Searched_Webtoon_Title)
 }
-on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
+on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
 
 /** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
 function Update_Title_Results_UI(title_results)
@@ -32,13 +32,13 @@ function Update_Title_Results_UI(title_results)
 async function on_Click_Searched_Webtoon_Title(e)
 {
   const TITLE_ID_TO_SEARCH = e.target.getAttribute("title_id")
-  const MAX_INDEX = await Rest_Api.Search_Max_Index(TITLE_ID_TO_SEARCH)
+  const MAX_INDEX = await Rest_Api.search_Max_Index(TITLE_ID_TO_SEARCH)
 
-  const INDEX_RESULT_HTMLS = Iter.Range(1, MAX_INDEX+1).map((index) => 
+  const INDEX_RESULT_HTMLS = Iter.range(1, MAX_INDEX+1).map((index) => 
     `<tr><td><div><input type="checkbox" class="webtoon_index_checkbox" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</div></td></tr>`)
   document.querySelector("#index_result_table").innerHTML = INDEX_RESULT_HTMLS.join('\n')
 }
-on_Click_Searched_Webtoon_Title = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
+on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
 async function on_Click_Zip_Download_Button(e)
 {
@@ -53,6 +53,6 @@ async function on_Click_Zip_Download_Button(e)
   const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
   Browser.download_File(ZIP_DATA_URL, "download.zip")
 }
-on_Click_Zip_Download_Button = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
+on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
        
 main()
