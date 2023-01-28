@@ -2,13 +2,13 @@ import express from "express"
 import Wrap from "../../../modules/wrap.js"
 import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
+import System from "../../../modules/system.js"
 
 import Element from "../../../modules/element.js"
 import axios from "axios"
 
 import UUID from "../../../modules/uuid.js"
 import fs from "fs"
-import { exec } from "child_process"
 
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
@@ -37,16 +37,6 @@ async function get_Router_callback(req, res)
   }  
 }
 get_Router_callback = Wrap.wrap_With_Try_Res_Promise(get_Router_callback)
-
-function execute_Shell_Command(shell_command)
-{
-  return new Promise((resolve, reject) => {
-    exec(shell_command, (error, stdout, stderr) => {
-      if(error) reject(stderr)
-      else resolve(stdout)
-    })
-  })
-}
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -93,7 +83,7 @@ async function post_Router_callback(req, res)
     if(webtoon_info_index != WEBTOON_INFOS.length-1) { await sleep(1000) }
   }
   const ZIP_PATH = `./downloads/${FOLDER_UUID}.zip`
-  await execute_Shell_Command(`cd ${DOWNLOAD_FOLDER_PATH};zip -r ../${FOLDER_UUID}.zip ./*`)
+  await System.execute_Shell_Command(`cd ${DOWNLOAD_FOLDER_PATH};zip -r ../${FOLDER_UUID}.zip ./*`)
 
   const ZIP_DATA_BASE64 = fs.readFileSync(ZIP_PATH, {encoding: 'base64'})
   const ZIP_DATA_URL = "data:file/zip;base64," + ZIP_DATA_BASE64
