@@ -47,6 +47,12 @@ function execute_Shell_Command(shell_command)
   })
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 /** 유저가 요청한 특정 웹툰 화수에 대한 다운로드 서비스를 제공하기 위해서 */
 async function post_Router_callback(req, res)
 {
@@ -57,25 +63,33 @@ async function post_Router_callback(req, res)
   const DOWNLOAD_FOLDER_PATH = `./downloads/${FOLDER_UUID}`
   fs.mkdirSync(DOWNLOAD_FOLDER_PATH)
   
-  for(let webtoon_info of WEBTOON_INFOS)
+  for(let webtoon_info_index=0; webtoon_info_index<WEBTOON_INFOS.length;  webtoon_info_index++)
   {
-    const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${webtoon_info.index}화`
+    const WEBTOON_INFO = WEBTOON_INFOS[webtoon_info_index]
+    const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${WEBTOON_INFO.index}화`
     fs.mkdirSync(INDEX_DOWNLOAD_FOLDER_PATH)
     
-    const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${webtoon_info.title_id}&no=${webtoon_info.index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
+    const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${WEBTOON_INFO.title_id}&no=${WEBTOON_INFO.index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
     const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
-    
-    const IMAGE_DATA = (await axios.get(IMAGE_LINKS[0], {
-                      responseType: 'arraybuffer',
-                       headers: {
-                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-                       }
-                      })).data
-    if(IMAGE_DATA==null)
-      throw new Error("이미지 데이터 받아오기에 실패함 !")
 
-    const DOWNLOAD_IMAGE_PATH = `${INDEX_DOWNLOAD_FOLDER_PATH}/image_${1}.jpg`
-    fs.writeFileSync(DOWNLOAD_IMAGE_PATH, IMAGE_DATA)
+    for(let link_index=0; link_index<IMAGE_LINKS.length; link_index++)
+    {
+      const IMAGE_DATA = (await axios.get(IMAGE_LINKS[link_index], {
+                        responseType: 'arraybuffer',
+                         headers: {
+                           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+                         }
+                        })).data
+      if(IMAGE_DATA==null)
+        throw new Error("이미지 데이터 받아오기에 실패함 !")
+      
+      const DOWNLOAD_IMAGE_PATH = `${INDEX_DOWNLOAD_FOLDER_PATH}/image_${link_index+1}.jpg`
+      fs.writeFileSync(DOWNLOAD_IMAGE_PATH, IMAGE_DATA)
+      
+      console.log(`[*] ${webtoon_info_index}/${WEBTOON_INFOS.length-1} 인덱스 화 ${link_index}/${IMAGE_LINKS.length-1} 번째 인덱스 이미지 다운로드 완료!`)
+    }
+    
+    if(webtoon_info_index != WEBTOON_INFOS.length-1) { await sleep(1000) }
   }
   const ZIP_PATH = `./downloads/${FOLDER_UUID}.zip`
   await execute_Shell_Command(`cd ${DOWNLOAD_FOLDER_PATH};zip -r ../${FOLDER_UUID}.zip ./*`)
