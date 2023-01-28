@@ -6,6 +6,9 @@ import Webtoon_Api from "../../../modules/webtoon_api.js"
 import Element from "../../../modules/element.js"
 import axios from "axios"
 
+import UUID from "../../../modules/uuid.js"
+import fs from "fs"
+
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
 {
@@ -50,11 +53,15 @@ async function post_Router_callback(req, res)
                        headers: {
                          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
                        }
-                      })).data   
+                      })).data  
   }
   if(IMAGE_DATA==null)
     throw new Error("이미지 데이터 받아오기에 실패함 !")
 
+  const FOLDER_UUID = UUID.get_UUID()
+  const DOWNLOAD_FOLDER_PATH = `./downloads/${FOLDER_UUID}`
+  fs.mkdirSync(DOWNLOAD_FOLDER_PATH)
+  
   const IMAGE_DATA_BASE64 = Buffer.from(IMAGE_DATA, "binary").toString('base64')
   const IMAGE_DATA_URL = "data:image/jpg;base64," + IMAGE_DATA_BASE64
   res.json({is_error:false, data_url:IMAGE_DATA_URL})
