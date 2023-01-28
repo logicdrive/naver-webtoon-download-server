@@ -36,6 +36,7 @@ async function get_Router_callback(req, res)
       return
   }  
 }
+get_Router_callback = Wrap.Wrap_With_Try_Res_Promise(get_Router_callback)
 
 function execute_Shell_Command(shell_command)
 {
@@ -101,12 +102,9 @@ async function post_Router_callback(req, res)
   fs.rmSync(ZIP_PATH, {force: true})
   res.json({is_error:false, data_url:ZIP_DATA_URL})
 }
-
-get_Router_callback = Wrap.Wrap_With_Try_Res_Promise(get_Router_callback)
 post_Router_callback = Wrap.Wrap_With_Try_Res_Promise(post_Router_callback)
 
 const router = express.Router()
 router.get('/', get_Router_callback)
 router.post('/', post_Router_callback)
-
 export default router

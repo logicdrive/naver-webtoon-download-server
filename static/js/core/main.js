@@ -18,6 +18,7 @@ async function on_Submit_title_Search_Form(e)
     Update_Title_Results_UI(TITLE_RESULTS)
     Element.add_On_Click_Trigger("#title_result_table td div", on_Click_Searched_Webtoon_Title)
 }
+on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
 
 /** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
 function Update_Title_Results_UI(title_results)
@@ -37,6 +38,7 @@ async function on_Click_Searched_Webtoon_Title(e)
     `<tr><td><div><input type="checkbox" class="webtoon_index_checkbox" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</div></td></tr>`)
   document.querySelector("#index_result_table").innerHTML = INDEX_RESULT_HTMLS.join('\n')
 }
+on_Click_Searched_Webtoon_Title = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
 async function on_Click_Zip_Download_Button(e)
 {
@@ -57,9 +59,6 @@ async function on_Click_Zip_Download_Button(e)
     const ZIP_DATA_URL = (await RES.json()).data_url
     Browser.download_File(ZIP_DATA_URL, "download.zip")
 }
-
-on_Submit_title_Search_Form = Wrap.Wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
-on_Click_Searched_Webtoon_Title = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 on_Click_Zip_Download_Button = Wrap.Wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
        
 main()
