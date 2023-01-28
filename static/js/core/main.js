@@ -43,8 +43,6 @@ async function on_Click_Zip_Download_Button(e)
     const CHECKED_WEBTOON_INFOS = document.querySelectorAll("input.webtoon_index_checkbox:checked")
     if(CHECKED_WEBTOON_INFOS.length == 0)
       throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
-    if(CHECKED_WEBTOON_INFOS.length > 1)
-      throw new Error("여러개를 다운 받는 기능은 아직 미구현입니다 !")
   
     const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(document.querySelectorAll("input.webtoon_index_checkbox:checked")).map((sel) => {
         return {title_id:sel.getAttribute("title_id"), index:sel.getAttribute("index")}
@@ -55,10 +53,10 @@ async function on_Click_Zip_Download_Button(e)
       headers: { "Content-Type": "application/json" },
       body : JSON.stringify({"webtoon_infos":WEBTOON_INFOS_TO_DOWNLOAD})
     })
-    const IMAGE_DATA_URL = (await RES.json()).data_url
+    const ZIP_DATA_URL = (await RES.json()).data_url
 
     const A_TAG = document.createElement('a')
-    A_TAG.setAttribute("href", IMAGE_DATA_URL)
+    A_TAG.setAttribute("href", ZIP_DATA_URL)
     A_TAG.setAttribute("download", "download.zip")
     document.body.appendChild(A_TAG)
     A_TAG.click()
