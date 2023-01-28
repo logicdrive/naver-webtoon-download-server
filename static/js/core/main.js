@@ -59,7 +59,7 @@ async function on_Click_Zip_Download_Button(e)
 
     const A_TAG = document.createElement('a')
     A_TAG.setAttribute("href", IMAGE_DATA_URL)
-    A_TAG.setAttribute("download", "download.jpg")
+    A_TAG.setAttribute("download", "download.zip")
     document.body.appendChild(A_TAG)
     A_TAG.click()
 }

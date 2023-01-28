@@ -8,6 +8,7 @@ import axios from "axios"
 
 import UUID from "../../../modules/uuid.js"
 import fs from "fs"
+import { exec } from "child_process"
 
 /** 유저가 요청한 키워드들에 대한 검색 결과를 제공해주기 위해서 */
 async function get_Router_callback(req, res)
@@ -36,35 +37,55 @@ async function get_Router_callback(req, res)
   }  
 }
 
+function execute_Shell_Command(shell_command)
+{
+  return new Promise((resolve, reject) => {
+    exec(shell_command, (error, stdout, stderr) => {
+      if(error) reject(stderr)
+      else resolve(stdout)
+    })
+  })
+}
+
 /** 유저가 요청한 특정 웹툰 화수에 대한 다운로드 서비스를 제공하기 위해서 */
 async function post_Router_callback(req, res)
 {
   Params_Check.Para_is_null_or_empty(req.body, ["webtoon_infos"])
   const {webtoon_infos:WEBTOON_INFOS} = req.body
 
-  let IMAGE_DATA = null
-  for(let webtoon_info of WEBTOON_INFOS)
-  {
-    const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${webtoon_info.title_id}&no=${webtoon_info.index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
-    const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
-    
-    IMAGE_DATA = (await axios.get(IMAGE_LINKS[0], {
-                      responseType: 'arraybuffer',
-                       headers: {
-                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-                       }
-                      })).data  
-  }
-  if(IMAGE_DATA==null)
-    throw new Error("이미지 데이터 받아오기에 실패함 !")
-
   const FOLDER_UUID = UUID.get_UUID()
   const DOWNLOAD_FOLDER_PATH = `./downloads/${FOLDER_UUID}`
   fs.mkdirSync(DOWNLOAD_FOLDER_PATH)
   
-  const IMAGE_DATA_BASE64 = Buffer.from(IMAGE_DATA, "binary").toString('base64')
-  const IMAGE_DATA_URL = "data:image/jpg;base64," + IMAGE_DATA_BASE64
-  res.json({is_error:false, data_url:IMAGE_DATA_URL})
+  for(let webtoon_info of WEBTOON_INFOS)
+  {
+    const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${webtoon_info.index}화`
+    fs.mkdirSync(INDEX_DOWNLOAD_FOLDER_PATH)
+    
+    const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${webtoon_info.title_id}&no=${webtoon_info.index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
+    const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
+    
+    const IMAGE_DATA = (await axios.get(IMAGE_LINKS[0], {
+                      responseType: 'arraybuffer',
+                       headers: {
+                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
+                       }
+                      })).data
+    if(IMAGE_DATA==null)
+      throw new Error("이미지 데이터 받아오기에 실패함 !")
+
+    const DOWNLOAD_IMAGE_PATH = `${INDEX_DOWNLOAD_FOLDER_PATH}/image_${1}.jpg`
+    fs.writeFileSync(DOWNLOAD_IMAGE_PATH, IMAGE_DATA)
+  }
+  const ZIP_PATH = `./downloads/${FOLDER_UUID}.zip`
+  await execute_Shell_Command(`cd ${DOWNLOAD_FOLDER_PATH};zip -r ../${FOLDER_UUID}.zip ./*`)
+
+  const ZIP_DATA_BASE64 = fs.readFileSync(ZIP_PATH, {encoding: 'base64'})
+  const ZIP_DATA_URL = "data:file/zip;base64," + ZIP_DATA_BASE64
+
+  fs.rmSync(DOWNLOAD_FOLDER_PATH, {recursive: true, force: true})
+  fs.rmSync(ZIP_PATH, {force: true})
+  res.json({is_error:false, data_url:ZIP_DATA_URL})
 }
 
 get_Router_callback = Wrap.Wrap_With_Try_Res_Promise(get_Router_callback)
