@@ -38,12 +38,6 @@ async function get_Router_callback(req, res)
 }
 get_Router_callback = Wrap.wrap_With_Try_Res_Promise(get_Router_callback)
 
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 /** 유저가 요청한 특정 웹툰 화수에 대한 다운로드 서비스를 제공하기 위해서 */
 async function post_Router_callback(req, res)
 {
@@ -80,7 +74,7 @@ async function post_Router_callback(req, res)
       console.log(`[*] ${webtoon_info_index}/${WEBTOON_INFOS.length-1} 인덱스 화 ${link_index}/${IMAGE_LINKS.length-1} 번째 인덱스 이미지 다운로드 완료!`)
     }
     
-    if(webtoon_info_index != WEBTOON_INFOS.length-1) { await sleep(1000) }
+    if(webtoon_info_index != WEBTOON_INFOS.length-1) { await System.sleep(1000) }
   }
   const ZIP_PATH = `./downloads/${FOLDER_UUID}.zip`
   await System.execute_Shell_Command(`cd ${DOWNLOAD_FOLDER_PATH};zip -r ../${FOLDER_UUID}.zip ./*`)
