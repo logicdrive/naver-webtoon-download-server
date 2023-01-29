@@ -2,9 +2,8 @@ import express from "express"
 import Wrap from "../../../modules/wrap.js"
 import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
+import Webtoon_Service from "../../../modules/webtoon_service.js"
 import System from "../../../modules/system.js"
-
-import Request from "../../../modules/request.js"
 
 import UUID from "../../../modules/uuid.js"
 import fs from "fs"
@@ -53,18 +52,8 @@ async function post_Router_callback(req, res)
     const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${WEBTOON_INFO.index}화`
     fs.mkdirSync(INDEX_DOWNLOAD_FOLDER_PATH)
 
-    const IMAGE_LINKS = await Webtoon_Api.get_Image_Links(WEBTOON_INFO.title_id, WEBTOON_INFO.index)
-    for(let link_index=0; link_index<IMAGE_LINKS.length; link_index++)
-    {
-      const IMAGE_DATA = await Request.get_For_Multimedia_Data(IMAGE_LINKS[link_index])
-      if(IMAGE_DATA==null)
-        throw new Error("이미지 데이터 받아오기에 실패함 !")
-      
-      const DOWNLOAD_IMAGE_PATH = `${INDEX_DOWNLOAD_FOLDER_PATH}/image_${link_index+1}.jpg`
-      fs.writeFileSync(DOWNLOAD_IMAGE_PATH, IMAGE_DATA)
-      console.log(`[*] ${webtoon_info_index}/${WEBTOON_INFOS.length-1} 인덱스 화 ${link_index}/${IMAGE_LINKS.length-1} 번째 인덱스 이미지 다운로드 완료!`)
-    }
-    
+    console.log(`[*] ${webtoon_info_index}/${WEBTOON_INFOS.length-1} 인덱스 화 다운로드 시도중...`)
+    await Webtoon_Service.download_Webtoon_Images(WEBTOON_INFO.title_id, WEBTOON_INFO.index, INDEX_DOWNLOAD_FOLDER_PATH)
     if(webtoon_info_index != WEBTOON_INFOS.length-1) { await System.sleep(1000) }
   }
   const ZIP_PATH = `./downloads/${FOLDER_UUID}.zip`
