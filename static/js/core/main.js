@@ -40,7 +40,8 @@ async function on_Click_Searched_Webtoon_Title(e)
 }
 on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
-async function on_Click_Zip_Download_Button(e)
+/** 선택된 웹툰 및 화수들을 .zip로 압축해서 다운받도록하기 위해서 */
+async function on_Click_Zip_Download_Button(_)
 {
   const CHECKED_WEBTOON_INFOS = document.querySelectorAll("input.webtoon_index_checkbox:checked")
   if(CHECKED_WEBTOON_INFOS.length == 0)
