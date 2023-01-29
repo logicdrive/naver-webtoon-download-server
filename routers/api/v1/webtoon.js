@@ -4,7 +4,7 @@ import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 import System from "../../../modules/system.js"
 
-import axios from "axios"
+import Request from "../../../modules/request.js"
 
 import UUID from "../../../modules/uuid.js"
 import fs from "fs"
@@ -56,18 +56,12 @@ async function post_Router_callback(req, res)
     const IMAGE_LINKS = await Webtoon_Api.get_Image_Links(WEBTOON_INFO.title_id, WEBTOON_INFO.index)
     for(let link_index=0; link_index<IMAGE_LINKS.length; link_index++)
     {
-      const IMAGE_DATA = (await axios.get(IMAGE_LINKS[link_index], {
-                        responseType: 'arraybuffer',
-                         headers: {
-                           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36",
-                         }
-                        })).data
+      const IMAGE_DATA = await Request.get_For_Multimedia_Data(IMAGE_LINKS[link_index])
       if(IMAGE_DATA==null)
         throw new Error("이미지 데이터 받아오기에 실패함 !")
       
       const DOWNLOAD_IMAGE_PATH = `${INDEX_DOWNLOAD_FOLDER_PATH}/image_${link_index+1}.jpg`
       fs.writeFileSync(DOWNLOAD_IMAGE_PATH, IMAGE_DATA)
-      
       console.log(`[*] ${webtoon_info_index}/${WEBTOON_INFOS.length-1} 인덱스 화 ${link_index}/${IMAGE_LINKS.length-1} 번째 인덱스 이미지 다운로드 완료!`)
     }
     
