@@ -4,7 +4,6 @@ import Params_Check from "../../../modules/params_check.js"
 import Webtoon_Api from "../../../modules/webtoon_api.js"
 import System from "../../../modules/system.js"
 
-import Element from "../../../modules/element.js"
 import axios from "axios"
 
 import UUID from "../../../modules/uuid.js"
@@ -53,10 +52,8 @@ async function post_Router_callback(req, res)
     const WEBTOON_INFO = WEBTOON_INFOS[webtoon_info_index]
     const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${WEBTOON_INFO.index}화`
     fs.mkdirSync(INDEX_DOWNLOAD_FOLDER_PATH)
-    
-    const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${WEBTOON_INFO.title_id}&no=${WEBTOON_INFO.index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
-    const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
 
+    const IMAGE_LINKS = await Webtoon_Api.get_Image_Links(WEBTOON_INFO.title_id, WEBTOON_INFO.index)
     for(let link_index=0; link_index<IMAGE_LINKS.length; link_index++)
     {
       const IMAGE_DATA = (await axios.get(IMAGE_LINKS[link_index], {

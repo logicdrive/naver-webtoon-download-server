@@ -23,6 +23,14 @@ class Webtoon_Api
     const MAX_INDEX = url.parse($(INDEX_SELS[0]).attr("href"), true).query.no
     return MAX_INDEX
   }
+
+  /** 주어진 타이틀 ID - 인덱스와 매칭되는 웹툰의 이미지 링크 리스트를 반환시키기 위해서 */
+  static async get_Image_Links(title_id, index)
+  {
+    const [IMAGE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${title_id}&no=${index}`, `div#comic_view_area div.wt_viewer img[id^="content"]`)
+    const IMAGE_LINKS = IMAGE_SELS.map((e) => $(e).attr("src"))
+    return IMAGE_LINKS
+  }
 }
 
 export default Webtoon_Api
