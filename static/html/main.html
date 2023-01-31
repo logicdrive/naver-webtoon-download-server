@@ -39,9 +39,9 @@
         <div class="row">
           <div class="col-sm-4">
               <h3>[1] 웹툰 제목 검색</h3>
-              <form class="form-inline" id="title_search_form">
-                <input type="text" class="form-control mb-2 mb-xl-0 mr-sm-2" placeholder="검색할 웹툰 제목 입력">
-                <button type="submit" class="btn btn-primary">검색</button>
+              <form id="title_search_form" class="form-inline">
+                <input class="form-control mb-2 mb-xl-0 mr-sm-2" type="text" placeholder="검색할 웹툰 제목 입력">
+                <button class="btn btn-primary" type="submit">검색</button>
               </form>
               <ul class="list-group mt-2">
                 <li class="list-group-item">웹툰 제목 1</li>
@@ -53,8 +53,8 @@
           <div class="col-sm-4">
             <h3>[2] 다운로드 화수 선택</h3>
             <div class="row m-0">
-              <button type="button" class="btn btn-primary col-sm-5">모두 선택</button>
-              <button type="button" class="btn btn-primary col-sm-5 ml-auto">범위 선택</button>
+              <button class="btn btn-primary col-sm-5" type="button">모두 선택</button>
+              <button class="btn btn-primary col-sm-5 ml-auto" type="button">범위 선택</button>
             </div>
             <ul class="list-group col-sm-12 p-0 mt-2">
                 <li class="list-group-item">1 화</li>
@@ -65,7 +65,7 @@
 
           <div class="col-sm-4">
             <h3>[3] 다운로드 진행률</h3>
-            <button type="button" class="btn btn-primary col-sm-12">.zip 다운로드</button>
+            <button id="zip_download_button" class="btn btn-primary col-sm-12" type="button">.zip 다운로드</button>
             <ul class="list-group col-sm-12 p-0 mt-2">
                 <li class="list-group-item">... 100%</li>
             </ul>
