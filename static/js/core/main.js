@@ -34,20 +34,38 @@ async function on_Click_Searched_Webtoon_Title(e)
   const TITLE_ID_TO_SEARCH = e.target.getAttribute("title_id")
   const MAX_INDEX = await Rest_Api.search_Max_Index(TITLE_ID_TO_SEARCH)
 
-  const INDEX_RESULT_HTMLS = Iter.range(1, MAX_INDEX+1).map((index) => 
-    `<li class="list-group-item webtoon_index_checkbox" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</li>`)
+  const INDEX_RESULT_HTMLS = Iter.range(MAX_INDEX, 1-1, -1).map((index) => 
+    `<li class="list-group-item webtoon_index_item" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</li>`)
   document.querySelector("#index_search_result_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
+  Element.add_On_Click_Trigger("#index_search_result_list li", on_Click_Searched_Webtoon_Index)
 }
 on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
+
+/** 검색된 웹툰 화수를 클릭할 경우, 그 선택을 반영시키기 위해서 */
+async function on_Click_Searched_Webtoon_Index(e)
+{
+  const SELECTED_ELEMENT = e.target
+  if(SELECTED_ELEMENT.classList.contains("checked")) 
+  {
+    SELECTED_ELEMENT.classList.remove("checked")
+    SELECTED_ELEMENT.style.background = ""
+  }
+  else
+  {
+    SELECTED_ELEMENT.classList.add("checked")
+    SELECTED_ELEMENT.style.background = "lightgray"
+  }
+}
+on_Click_Searched_Webtoon_Index = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Index)
 
 /** 선택된 웹툰 및 화수들을 .zip로 압축해서 다운받도록하기 위해서 */
 async function on_Click_Zip_Download_Button(_)
 {
-  const CHECKED_WEBTOON_INFOS = document.querySelectorAll("input.webtoon_index_checkbox:checked")
+  const CHECKED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item[class*='checked']")
   if(CHECKED_WEBTOON_INFOS.length == 0)
     throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
 
-  const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(document.querySelectorAll("input.webtoon_index_checkbox:checked")).map((sel) => {
+  const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(CHECKED_WEBTOON_INFOS).map((sel) => {
       return {title_id:sel.getAttribute("title_id"), index:sel.getAttribute("index")}
   })
 
