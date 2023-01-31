@@ -16,7 +16,7 @@ async function on_Submit_title_Search_Form(e)
   if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
   Update_Title_Results_UI(TITLE_RESULTS)
-  Element.add_On_Click_Trigger("#title_result_table td div", on_Click_Searched_Webtoon_Title)
+  Element.add_On_Click_Trigger("#title_search_result_list li", on_Click_Searched_Webtoon_Title)
 }
 on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
 
@@ -24,8 +24,8 @@ on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_S
 function Update_Title_Results_UI(title_results)
 {
   const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
-    `<tr><td><div title_id="${title_result.title_id}">${title_result.title}</div></td></tr>`)
-  document.querySelector("#title_result_table").innerHTML = TITLE_RESULT_HTMLS.join('\n')
+    `<li class="list-group-item" title_id="${title_result.title_id}">${title_result.title}</li>`)
+  document.querySelector("#title_search_result_list").innerHTML = TITLE_RESULT_HTMLS.join('\n')
 }
 
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
