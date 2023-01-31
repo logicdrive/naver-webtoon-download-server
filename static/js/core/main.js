@@ -35,8 +35,8 @@ async function on_Click_Searched_Webtoon_Title(e)
   const MAX_INDEX = await Rest_Api.search_Max_Index(TITLE_ID_TO_SEARCH)
 
   const INDEX_RESULT_HTMLS = Iter.range(1, MAX_INDEX+1).map((index) => 
-    `<tr><td><div><input type="checkbox" class="webtoon_index_checkbox" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</div></td></tr>`)
-  document.querySelector("#index_result_table").innerHTML = INDEX_RESULT_HTMLS.join('\n')
+    `<li class="list-group-item webtoon_index_checkbox" title_id="${TITLE_ID_TO_SEARCH}" index="${index}">${index}화</li>`)
+  document.querySelector("#index_search_result_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
 }
 on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
