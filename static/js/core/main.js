@@ -150,24 +150,22 @@ class Index_Manager
 /** 선택된 웹툰 및 화수들을 .zip로 압축해서 다운받도록하기 위해서 */
 async function on_Click_Zip_Download_Button(_)
 {
-  const CHECKED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item")
-  if(CHECKED_WEBTOON_INFOS.length == 0)
+  const SELECTED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item")
+  if(SELECTED_WEBTOON_INFOS.length == 0)
     throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
 
   document.querySelector("#download_process_list").innerHTML = `<li class="list-group-item">다운로드 진행중..</li>`
-  CHECKED_WEBTOON_INFOS.forEach((sel) => sel.click())
+  Index_Manager.init_Index_Info()
 
   const TITLE_ID = document.querySelector("li.webtoon_title_item[class*='checked']").getAttribute("title_id")
-  const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(CHECKED_WEBTOON_INFOS).map((sel) => {
+  const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(SELECTED_WEBTOON_INFOS).map((sel) => {
       return {title_id:TITLE_ID, index:sel.getAttribute("index")}
   })
   const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
   Browser.download_File(ZIP_DATA_URL, "download.zip")
   
   document.querySelector("#download_process_list").innerHTML = ""
-  const AFTER_CHECKED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item[class*='checked']")
-  if(AFTER_CHECKED_WEBTOON_INFOS.length > 0) change_Visible_Of_Process_Div([true, true, true])
-  else change_Visible_Of_Process_Div([true, true, false])
+  change_Visible_Of_Process_Div([true, true, false])
 }
 on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
 
