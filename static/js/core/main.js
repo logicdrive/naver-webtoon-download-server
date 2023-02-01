@@ -1,9 +1,9 @@
 function main()
 {
-  change_Visible_Of_Process_Div([true, false, false])
   document.querySelector("#title_search_form").onsubmit = on_Submit_title_Search_Form
   document.querySelector("#zip_download_button").onclick = on_Click_Zip_Download_Button
   document.querySelector("#add_index_button").onclick = on_Click_Add_Index
+  change_Process_Visible_Level(1)
 }
 
 /** 웹툰 제목을 검색할 경우, 그에 대한 검색결과를 출력하기 위해서 */
@@ -13,14 +13,11 @@ async function on_Submit_title_Search_Form(e)
   
   const TITLE_TO_SEARCH = document.querySelector("#title_search_form input[type='text']").value
   if(TITLE_TO_SEARCH.length == 0) throw new Error("검색할 웹툰명을 입력해주세요!")
-
-  document.querySelector("#title_search_result_list").innerHTML = ""
-  Index_Manager.init_Index_Info()
-  change_Visible_Of_Process_Div([true, false, false])
   
   const TITLE_RESULTS = await Rest_Api.search_Webtoon_Titles(TITLE_TO_SEARCH)
   if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
+  change_Process_Visible_Level(1)
   Update_Title_Results_UI(TITLE_RESULTS)
   Element.add_On_Click_Trigger("#title_search_result_list li", on_Click_Searched_Webtoon_Title)
 }
@@ -169,6 +166,20 @@ async function on_Click_Zip_Download_Button(_)
 }
 on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
 
+
+/** 진행과정이 보이는 수준을 조절하기 위해서 */
+function change_Process_Visible_Level(visible_level)
+{
+  switch(visible_level)
+  {
+    // 타이틀 검색결과까지 모든 과정을 초기상태로 되돌리기 위해서
+    case 1 :
+      document.querySelector("#title_search_result_list").innerHTML = ""
+      Index_Manager.init_Index_Info()
+      change_Visible_Of_Process_Div([true, false, false])
+  }
+}
+
 /** 주어진 리스트의 순서에따라서 각 프로세스 블럭의 표시여부를 변경시키기 위해서 
  *
  *  change_Visible_Of_Process_Div([false, true, true]) // '[1]' 번째 블록이 가려지고, 나머지 블록들이 보이게 됨
@@ -187,5 +198,6 @@ function change_Visible_Of_Process_Div(isvisibles)
     PROCESS_DIVS[i].style.visibility = (isvisibles[i]) ? "" : "hidden"
   }
 }
-    
+
+
 main()
