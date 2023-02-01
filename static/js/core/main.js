@@ -9,11 +9,13 @@ function main()
 async function on_Submit_title_Search_Form(e)
 {
   change_Visible_Of_Process_Div([true, false, false])
-  document.querySelector("#index_search_result_list").innerHTML = ""
   e.preventDefault()
   
   const TITLE_TO_SEARCH = document.querySelector("#title_search_form input[type='text']").value
   if(TITLE_TO_SEARCH.length == 0) throw new Error("검색할 웹툰명을 입력해주세요!")
+
+  document.querySelector("#title_search_result_list").innerHTML = ""
+  document.querySelector("#index_search_result_list").innerHTML = ""
   
   const TITLE_RESULTS = await Rest_Api.search_Webtoon_Titles(TITLE_TO_SEARCH)
   if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
@@ -27,15 +29,26 @@ on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_S
 function Update_Title_Results_UI(title_results)
 {
   const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
-    `<li class="list-group-item" title_id="${title_result.title_id}">${title_result.title}</li>`)
+    `<li class="list-group-item webtoon_title_item" title_id="${title_result.title_id}">${title_result.title}</li>`)
   document.querySelector("#title_search_result_list").innerHTML = TITLE_RESULT_HTMLS.join('\n')
 }
 
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
 async function on_Click_Searched_Webtoon_Title(e)
 {
+  const CHECKED_WEBTOON_TITLE_ITEMS = document.querySelectorAll("li.webtoon_title_item[class*='checked']")
+  CHECKED_WEBTOON_TITLE_ITEMS.forEach((sel) => {
+    sel.classList.remove("checked")
+    sel.style.background = ""
+  })
+  
+  const SELECTED_ELEMENT = e.target
+  SELECTED_ELEMENT.classList.add("checked")
+  SELECTED_ELEMENT.style.background = "lightgray"
+
+  
   change_Visible_Of_Process_Div([true, false, false])
-  const TITLE_ID_TO_SEARCH = e.target.getAttribute("title_id")
+  const TITLE_ID_TO_SEARCH = SELECTED_ELEMENT.getAttribute("title_id")
   const MAX_INDEX = await Rest_Api.search_Max_Index(TITLE_ID_TO_SEARCH)
 
   const INDEX_RESULT_HTMLS = Iter.range(MAX_INDEX, 1-1, -1).map((index) => 
