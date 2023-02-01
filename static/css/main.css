@@ -6,3 +6,19 @@
 body {
   font-family: jua;
 }
+
+li.webtoon_title_item {
+  cursor:pointer;
+}
+
+li.webtoon_title_item:hover {
+  background:darkgray;
+}
+
+li.webtoon_index_item {
+  cursor:pointer;
+}
+
+li.webtoon_index_item:hover {
+  background:darkgray;
+}
