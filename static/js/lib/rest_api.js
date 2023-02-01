@@ -8,11 +8,10 @@ class Rest_Api
     return REQ_RESULT.result
   }
 
-  /** 특정 웹툰에 대한 최대 목차를 반환시키기 위해서 */
-  static async search_Max_Index(title_id)
+  /** 특정 웹툰의 인덱스 정보들을 얻기 위해서 */
+  static async search_Index_Infos(title_id, start_index, end_index)
   {
-    const REQ_RESULT = await Rest_Api.request_With_Error_Check(`/api/v1/webtoon_index?title_id=${title_id}`, "GET")
-    return Number(REQ_RESULT.result)
+    return (await Rest_Api.request_With_Error_Check(`/api/v1/webtoon_index?title_id=${title_id}&start_index=${start_index}&end_index=${end_index}`, "GET")).index_infos
   }
 
   /** 전달된 웹툰 정보들을 바탕으로 .zip로 크롤링된 DATA URL을 얻기 위해서 */

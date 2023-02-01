@@ -64,46 +64,53 @@ async function on_Click_Add_Index(_)
     throw new Error("추가시킬 화수를 입력해주세요.")
 
   if(START_INDEX.length != 0 && END_INDEX.length != 0)
-    await Index_Manager.add_Index_Info_By_Range(Number(START_INDEX), Number(END_INDEX), TITLE_ID)
+    await Index_Manager.add_Index_Info_By_Range(TITLE_ID, Number(START_INDEX), Number(END_INDEX))
   else
-    if(START_INDEX.length != 0) await Index_Manager.add_Index_Info(Number(START_INDEX), TITLE_ID)
-    else await Index_Manager.add_Index_Info(Number(END_INDEX), TITLE_ID)
+    if(START_INDEX.length != 0) await Index_Manager.add_Index_Info(TITLE_ID, Number(START_INDEX))
+    else await Index_Manager.add_Index_Info(TITLE_ID, Number(END_INDEX))
 
   document.querySelector("input#start_index").value = ""
   document.querySelector("input#end_index").value = ""
 }
 on_Click_Add_Index = Wrap.wrap_With_Try_Alert_Promise(on_Click_Add_Index)
 
+/** 목차 UI 초기화, 조회등을 일괄적으로 수행하기 위해서 */
 class Index_Manager
 {
   static _current_index_infos = []
 
+  /** 모든 목차 정보를 초기화시키기 위해서 */
   static init_Index_Info()
   {
     Index_Manager._current_index_infos = []
     document.querySelector("#index_search_result_list").innerHTML = ""
   }
-  
-  static async add_Index_Info_By_Range(start_index, end_index, title_id)
+
+  /** 특정 범위의 목차를 조회해서 항목에 추가시키기 위해서 */
+  static async add_Index_Info_By_Range(title_id, start_index, end_index)
   {
     if(end_index < start_index) throw new Error("화수 범위가 올바르지 않습니다.")
     if(start_index == end_index)
     {
-      await Index_Manager.add_Index_Info(start_index, title_id)
+      await Index_Manager.add_Index_Info(title_id, start_index)
       return
     }
 
-    const INDEX_INFOS = (await Rest_Api.request_With_Error_Check(`/api/v1/webtoon_index?title_id=${title_id}&start_index=${start_index}&end_index=${end_index}`, "GET")).index_infos
-    Index_Manager._update_Index_Result_UI(INDEX_INFOS, title_id)
+    const INDEX_INFOS = await Rest_Api.search_Index_Infos(title_id, start_index, end_index)
+    Index_Manager.update_Current_Index_Infos(INDEX_INFOS)
+    Index_Manager._update_Index_Result_UI(title_id)
   }
 
-  static async add_Index_Info(index, title_id)
+  /** 특정 목차를 조회해서 항목에 추가시키기 위해서 */
+  static async add_Index_Info(title_id, index)
   {
-    const INDEX_INFOS = (await Rest_Api.request_With_Error_Check(`/api/v1/webtoon_index?title_id=${title_id}&start_index=${index}&end_index=${index}`, "GET")).index_infos
-    Index_Manager._update_Index_Result_UI(INDEX_INFOS, title_id)
+    const INDEX_INFOS = await Rest_Api.search_Index_Infos(title_id, index, index)
+    Index_Manager.update_Current_Index_Infos(INDEX_INFOS)
+    Index_Manager._update_Index_Result_UI(title_id)
   }
 
-  static _update_Index_Result_UI(index_infos, title_id)
+  /** 검색된 목차 정보를 기반으로 다운로드시킬 목차들의 목록을 업데이트하기 위해서 */
+  static async update_Current_Index_Infos(index_infos)
   {
     const CURRENT_INDEX_INFO_INDEXES = Index_Manager._current_index_infos.map((index_info) => index_info.index)
     for(let index_info of index_infos)
@@ -111,8 +118,12 @@ class Index_Manager
       if(CURRENT_INDEX_INFO_INDEXES.includes(index_info.index)) continue
       Index_Manager._current_index_infos.push(index_info)
     }
-    Index_Manager._current_index_infos.sort((info_a, info_b) => info_a.index - info_b.index)
-    
+    Index_Manager._current_index_infos.sort((info_a, info_b) => info_a.index - info_b.index) 
+  }
+  
+  /** 다운로드시킬 목차들의 목록을 UI에 반영시키기 위해서 */
+  static _update_Index_Result_UI(title_id)
+  {
     const INDEX_RESULT_HTMLS = Index_Manager._current_index_infos.map((index_info) => `<li class="list-group-item webtoon_index_item" title_id="${title_id}" index="${index_info.index}">${index_info.name}</li>`)
     document.querySelector("#index_search_result_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
     Element.add_On_Click_Trigger("li.webtoon_index_item", Index_Manager._on_Click_Searched_Webtoon_Index)
@@ -120,12 +131,14 @@ class Index_Manager
     change_Visible_Of_Process_Div([true, true, true])
   }
 
+  /** 목차 엘리먼트를 클릭했을 경우, 그 목차를 목록에서 삭제시키기 위해서 */
   static _on_Click_Searched_Webtoon_Index(e)
   {
+    const TITLE_ID = e.target.getAttribute("title_id")
     const SELECTED_INDEX = e.target.getAttribute("index")
     Index_Manager._current_index_infos = Index_Manager._current_index_infos.filter((index_info) => index_info.index != SELECTED_INDEX)
 
-    if(Index_Manager._current_index_infos.length > 0) Index_Manager._update_Index_Result_UI([])
+    if(Index_Manager._current_index_infos.length > 0) Index_Manager._update_Index_Result_UI(TITLE_ID)
     else
     {
       Index_Manager.init_Index_Info()
