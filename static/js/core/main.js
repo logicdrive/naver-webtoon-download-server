@@ -64,6 +64,7 @@ async function on_Click_Zip_Download_Button(_)
   const CHECKED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item[class*='checked']")
   if(CHECKED_WEBTOON_INFOS.length == 0)
     throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
+  CHECKED_WEBTOON_INFOS.forEach((sel) => sel.click())
 
   const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(CHECKED_WEBTOON_INFOS).map((sel) => {
       return {title_id:sel.getAttribute("title_id"), index:sel.getAttribute("index")}
