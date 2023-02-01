@@ -3,6 +3,7 @@ function main()
   change_Visible_Of_Process_Div([true, false, false])
   document.querySelector("#title_search_form").onsubmit = on_Submit_title_Search_Form
   document.querySelector("#zip_download_button").onclick = on_Click_Zip_Download_Button
+  document.querySelector("#select_all_button").onclick = on_Click_Select_All_Button
 }
 
 /** 웹툰 제목을 검색할 경우, 그에 대한 검색결과를 출력하기 위해서 */
@@ -102,6 +103,14 @@ async function on_Click_Zip_Download_Button(_)
   else change_Visible_Of_Process_Div([true, true, false])
 }
 on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
+
+/** 모든 화수를 일괄적으로 선택하기 위해서 */
+async function on_Click_Select_All_Button(_)
+{
+  const UNCHECKED_SELS = document.querySelectorAll("li.webtoon_index_item:not([class*='checked'])")
+  if(UNCHECKED_SELS.length > 0) UNCHECKED_SELS.forEach((sel) => sel.click())
+  else document.querySelectorAll("li.webtoon_index_item[class*='checked']").forEach((sel) => sel.click())
+}
 
 /** 주어진 리스트의 순서에따라서 각 프로세스 블럭의 표시여부를 변경시키기 위해서 
  *
