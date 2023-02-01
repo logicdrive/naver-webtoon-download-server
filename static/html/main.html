@@ -31,7 +31,7 @@
           <div class="col-sm-4">
               <h3>[1] 웹툰 제목 검색</h3>
               <form id="title_search_form" class="form-inline">
-                <input class="form-control mb-2 mb-xl-0 mr-sm-2" type="text" placeholder="검색할 웹툰 제목 입력">
+                <input class="form-control mb-2 mb-xl-0 mr-sm-2" type="text" placeholder="검색할 웹툰 제목">
                 <button class="btn btn-primary" type="submit">검색</button>
               </form>
               <ul id="title_search_result_list" class="list-group mt-2">
@@ -41,8 +41,10 @@
           <div class="col-sm-4">
             <h3>[2] 다운로드 화수 선택</h3>
             <div class="row m-0">
-              <button id="select_all_button" class="btn btn-primary col-sm-5" type="button">모두 선택</button>
-              <button id="select_range_button" class="btn btn-primary col-sm-5 ml-auto" type="button">범위 선택</button>
+              <input id="start_index" class="form-control col-sm-4" type="number" min="1" placeholder="시작 화수">
+              <p class="mb-0 ml-3 pt-2">~</p>
+              <input id="end_index" class="form-control col-sm-4 ml-3" type="number" min="1" placeholder="끝 화수">
+              <button id="add_index_button" class="btn btn-primary col-sm-2 ml-auto" type="button">추가</button>
             </div>
             <ul id="index_search_result_list" class="list-group col-sm-12 p-0 mt-2">
             </ul>
