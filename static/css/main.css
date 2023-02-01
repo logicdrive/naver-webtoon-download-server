@@ -1,0 +1,8 @@
+@font-face {
+  font-family: jua;
+  src: url(/font/Jua-Regular.ttf);
+}
+
+body {
+  font-family: jua;
+}
