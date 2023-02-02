@@ -68,15 +68,20 @@ async function on_Click_Zip_Download_Button(_)
   if(SELECTED_WEBTOON_INFOS.length == 0)
     throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
 
-  document.querySelector("#download_process_list").innerHTML = `<li class="list-group-item">다운로드 진행중..</li>`
+  const CONTENT_NAME = document.querySelector("li.webtoon_title_item[class*='checked']").textContent
+  const CURRENT_DATE_STR = Date_Lib.date_To_String(Date_Lib.date_Now(), "yyyyMMdd_hhmmss")
+  const ZIP_NAME = `${CONTENT_NAME}_${CURRENT_DATE_STR}.zip`
+  
+  document.querySelector("#download_process_list").innerHTML = `<li class="list-group-item">파일명 : ${ZIP_NAME}<br/>진행상태 : 다운로드 진행중...</li>`
   Index_Manager.init_Index_Info()
-
+  
   const TITLE_ID = document.querySelector("li.webtoon_title_item[class*='checked']").getAttribute("title_id")
   const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(SELECTED_WEBTOON_INFOS).map((sel) => {
       return {title_id:TITLE_ID, index:sel.getAttribute("index")}
   })
+
   const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
-  Browser.download_File(ZIP_DATA_URL, "download.zip")
+  Browser.download_File(ZIP_DATA_URL, ZIP_NAME)
   
   document.querySelector("#download_process_list").innerHTML = ""
   change_Process_Visible_Level(3)
