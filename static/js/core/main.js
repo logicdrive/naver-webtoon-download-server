@@ -43,9 +43,7 @@ async function on_Click_Searched_Webtoon_Title(e)
   const SELECTED_ELEMENT = e.target
   SELECTED_ELEMENT.classList.add("checked")
   SELECTED_ELEMENT.style.background = "lightgray"
-
-  Index_Manager.init_Index_Info()
-  change_Visible_Of_Process_Div([true, true, false])
+  change_Process_Visible_Level(2)
 }
 on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
@@ -124,8 +122,7 @@ class Index_Manager
     const INDEX_RESULT_HTMLS = Index_Manager._current_index_infos.map((index_info) => `<li class="list-group-item webtoon_index_item" title_id="${title_id}" index="${index_info.index}">${index_info.name}</li>`)
     document.querySelector("#index_search_result_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
     Element.add_On_Click_Trigger("li.webtoon_index_item", Index_Manager._on_Click_Searched_Webtoon_Index)
-
-    change_Visible_Of_Process_Div([true, true, true])
+    change_Process_Visible_Level(4)
   }
 
   /** 목차 엘리먼트를 클릭했을 경우, 그 목차를 목록에서 삭제시키기 위해서 */
@@ -136,11 +133,7 @@ class Index_Manager
     Index_Manager._current_index_infos = Index_Manager._current_index_infos.filter((index_info) => index_info.index != SELECTED_INDEX)
 
     if(Index_Manager._current_index_infos.length > 0) Index_Manager._update_Index_Result_UI(TITLE_ID)
-    else
-    {
-      Index_Manager.init_Index_Info()
-      change_Visible_Of_Process_Div([true, true, false])
-    }
+    else change_Process_Visible_Level(2)
   }
 }
 
@@ -162,7 +155,7 @@ async function on_Click_Zip_Download_Button(_)
   Browser.download_File(ZIP_DATA_URL, "download.zip")
   
   document.querySelector("#download_process_list").innerHTML = ""
-  change_Visible_Of_Process_Div([true, true, false])
+  change_Process_Visible_Level(3)
 }
 on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
 
@@ -172,11 +165,28 @@ function change_Process_Visible_Level(visible_level)
 {
   switch(visible_level)
   {
-    // 타이틀 검색결과까지 모든 과정을 초기상태로 되돌리기 위해서
+    // 타이틀 검색 결과까지 모든 과정을 초기상태로 되돌리기 위해서
     case 1 :
       document.querySelector("#title_search_result_list").innerHTML = ""
       Index_Manager.init_Index_Info()
       change_Visible_Of_Process_Div([true, false, false])
+      return
+
+    // 목차 검색 결과까지의 과정을 초기상태로 되돌리기 위해서
+    case 2 :
+      Index_Manager.init_Index_Info()
+      change_Visible_Of_Process_Div([true, true, false])
+      return
+
+    // 다운로드 결과까지의 과정을 초기 상태로 되돌리기 위해서
+    case 3 :
+      change_Visible_Of_Process_Div([true, true, false])
+      return
+
+    // 모든 과정을 보이도록 하기 위해서
+    case 4 :
+      change_Visible_Of_Process_Div([true, true, true])
+      return
   }
 }
 
