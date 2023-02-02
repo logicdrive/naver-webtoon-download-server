@@ -16,14 +16,13 @@ class Webtoon_Api
     return TITLE_INFOS
   }
 
-  /** 주어진 타이틀 ID과 매칭되는 웹툰의 최대 화수(no)를 추출해서 반환시키기 위해서 */
-  static async max_Index(title_id)
+  /** 주어진 웹툰 타이틀 ID의 인덱스와 매칭되는 목차명을 반환시키기 위해서 */
+  static async get_Index_Name(title_id, index)
   {
-    const [INDEX_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/list?titleId=${title_id}`, "div#content table.viewList tr td.title a")
-    const MAX_INDEX = url.parse($(INDEX_SELS[0]).attr("href"), true).query.no
-    return MAX_INDEX
+    const [TITLE_SELS, $] = await Element.external_Css_Sels(`https://comic.naver.com/webtoon/detail?titleId=${title_id}&no=${index}`, "div.tit_area div.view h3")
+    return $(TITLE_SELS[0]).text()
   }
-
+  
   /** 주어진 타이틀 ID - 인덱스와 매칭되는 웹툰의 이미지 링크 리스트를 반환시키기 위해서 */
   static async get_Image_Links(title_id, index)
   {

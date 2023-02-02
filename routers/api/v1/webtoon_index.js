@@ -9,10 +9,13 @@ async function get_Router_callback(req, res)
   const TITLE_ID = req.query.title_id
   const START_INDEX = Number(req.query.start_index)
   const END_INDEX = Number(req.query.end_index)
-  
+
   let index_infos = []
   for(let index=START_INDEX; index<=END_INDEX; index++)
-    index_infos.push({index:index, name:`${index} 화`})
+  {
+    const INDEX_NAME = await Webtoon_Api.get_Index_Name(TITLE_ID, index)
+    index_infos.push({index:index, name:`${index} : ${INDEX_NAME}`})
+  }
   
   res.json({is_error:false, index_infos:index_infos})
 }
