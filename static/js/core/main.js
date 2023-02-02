@@ -14,31 +14,14 @@ async function on_Submit_title_Search_Form(e)
   
   const TITLE_TO_SEARCH = document.querySelector("#title_search_form input[type='text']").value
   if(TITLE_TO_SEARCH.length == 0) throw new Error("검색할 웹툰명을 입력해주세요!")
-  
-  const TITLE_RESULTS = await Rest_Api.search_Webtoon_Titles(TITLE_TO_SEARCH)
-  if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
+  const TITLE_SEARCH_RESULTS = await Title_Manager.search_Webtoon_Titles(TITLE_TO_SEARCH)
+  if(TITLE_SEARCH_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
   Process_Visible_Manager.change_Process_Visible_Level(1)
-  update_Title_Results_UI(TITLE_RESULTS)
-  Element.add_On_Click_Trigger("#title_search_result_list li", on_Click_Searched_Webtoon_Title)
+
+  Title_Manager.update_Webtoon_Title_Result_UI(TITLE_SEARCH_RESULTS)
 }
 on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
-
-/** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
-async function on_Click_Searched_Webtoon_Title(e)
-{
-  const CHECKED_WEBTOON_TITLE_ITEMS = document.querySelectorAll("li.webtoon_title_item[class*='checked']")
-  CHECKED_WEBTOON_TITLE_ITEMS.forEach((sel) => {
-    sel.classList.remove("checked")
-    sel.style.background = ""
-  })
-  
-  const SELECTED_ELEMENT = e.target
-  SELECTED_ELEMENT.classList.add("checked")
-  SELECTED_ELEMENT.style.background = "lightgray"
-  Process_Visible_Manager.change_Process_Visible_Level(2)
-}
-on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
 /** 입력한 화수들에 대한 정보를 다운받을 화수들 목록에 추가시키기 위해서 */
 async function on_Click_Add_Index(_)
@@ -79,12 +62,39 @@ async function on_Click_Zip_Download_Button(_)
 on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
 
 
-/** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
-function update_Title_Results_UI(title_results)
+/** 타이틀 UI 초기화, 조회등을 일괄적으로 수행하기 위해서 */
+class Title_Manager
 {
-  const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
-    `<li class="list-group-item webtoon_title_item" title_id="${title_result.title_id}">${title_result.title}</li>`)
-  document.querySelector("#title_search_result_list").innerHTML = TITLE_RESULT_HTMLS.join('\n')
+  /** 웹툰 제목 키워드를 이용해서 검색하기 위해서 */
+  static async search_Webtoon_Titles(title_keyword)
+  {
+    const TITLE_RESULTS = await Rest_Api.search_Webtoon_Titles(title_keyword)
+    return TITLE_RESULTS
+  }
+
+  /** 검색된 키워드들을 UI로 출력시키기 위해서 */
+  static update_Webtoon_Title_Result_UI(title_results)
+  {
+    const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
+      `<li class="list-group-item webtoon_title_item" title_id="${title_result.title_id}">${title_result.title}</li>`)
+    document.querySelector("#title_search_result_list").innerHTML = TITLE_RESULT_HTMLS.join('\n')
+    Element.add_On_Click_Trigger("#title_search_result_list li", Title_Manager._on_Click_Searched_Webtoon_Title)
+  }
+
+  /** 검색된 웹툰 제목을 클릭할 경우, 클릭된 항목을 강조시키기 위해서 */
+  static async _on_Click_Searched_Webtoon_Title(e)
+  {
+    const CHECKED_WEBTOON_TITLE_ITEMS = document.querySelectorAll("li.webtoon_title_item[class*='checked']")
+    CHECKED_WEBTOON_TITLE_ITEMS.forEach((sel) => {
+      sel.classList.remove("checked")
+      sel.style.background = ""
+    })
+    
+    const SELECTED_ELEMENT = e.target
+    SELECTED_ELEMENT.classList.add("checked")
+    SELECTED_ELEMENT.style.background = "lightgray"
+    Process_Visible_Manager.change_Process_Visible_Level(2)
+  }
 }
 
 
@@ -156,6 +166,7 @@ class Index_Manager
   }
 }
 
+
 /** 다운로드 UI 정보들을 일괄적으로 관리하기 위해서 */
 class Download_Manager
 {
@@ -204,6 +215,7 @@ class Download_Manager
     document.querySelector("#download_process_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
   }
 }
+
 
 /** 진행과정 블록의 표시여부를 일괄적으로 관리하기 위해서 */
 class Process_Visible_Manager
@@ -257,5 +269,6 @@ class Process_Visible_Manager
     }
   }     
 }
+
 
 main()
