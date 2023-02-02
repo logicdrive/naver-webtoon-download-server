@@ -6,6 +6,7 @@ function main()
   change_Process_Visible_Level(1)
 }
 
+
 /** 웹툰 제목을 검색할 경우, 그에 대한 검색결과를 출력하기 위해서 */
 async function on_Submit_title_Search_Form(e)
 {
@@ -18,13 +19,13 @@ async function on_Submit_title_Search_Form(e)
   if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
   change_Process_Visible_Level(1)
-  Update_Title_Results_UI(TITLE_RESULTS)
+  update_Title_Results_UI(TITLE_RESULTS)
   Element.add_On_Click_Trigger("#title_search_result_list li", on_Click_Searched_Webtoon_Title)
 }
 on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
 
 /** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
-function Update_Title_Results_UI(title_results)
+function update_Title_Results_UI(title_results)
 {
   const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
     `<li class="list-group-item webtoon_title_item" title_id="${title_result.title_id}">${title_result.title}</li>`)
@@ -136,6 +137,7 @@ class Index_Manager
     else change_Process_Visible_Level(2)
   }
 }
+
 
 /** 선택된 웹툰 및 화수들을 .zip로 압축해서 다운받도록하기 위해서 */
 async function on_Click_Zip_Download_Button(_)
