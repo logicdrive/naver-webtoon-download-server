@@ -7,6 +7,10 @@ body {
   font-family: jua;
 }
 
+div.container div.col-sm-4:nth-child(2), div.container div.col-sm-4:nth-child(3) {
+  visibility: hidden;
+}
+
 li.webtoon_title_item {
   cursor:pointer;
 }

@@ -262,10 +262,10 @@ class Process_Visible_Manager
       // 다운로드가 진행중인 목록이 있을 경우, 가림 요청을 무시시키기 위해서
       if(i==2 && document.querySelectorAll("div.container > div.row > div:nth-child(3) > ul > li").length > 0)
       {
-        PROCESS_DIVS[i].style.visibility = ""
+        PROCESS_DIVS[i].style.visibility = "visible"
         continue
       }
-      PROCESS_DIVS[i].style.visibility = (isvisibles[i]) ? "" : "hidden"
+      PROCESS_DIVS[i].style.visibility = (isvisibles[i]) ? "visible" : "hidden"
     }
   }     
 }
