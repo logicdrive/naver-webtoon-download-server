@@ -20,7 +20,7 @@ async function post_Router_callback(req, res)
   for(let webtoon_info_index=0; webtoon_info_index<WEBTOON_INFOS.length;  webtoon_info_index++)
   {
     const WEBTOON_INFO = WEBTOON_INFOS[webtoon_info_index]
-    const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${WEBTOON_INFO.index}화`
+    const INDEX_DOWNLOAD_FOLDER_PATH = `${DOWNLOAD_FOLDER_PATH}/${WEBTOON_INFO.directory_name}`
     fs.mkdirSync(INDEX_DOWNLOAD_FOLDER_PATH)
 
     console.log(`[*] ${webtoon_info_index}/${WEBTOON_INFOS.length-1} 인덱스 화 다운로드 시도중...`)
