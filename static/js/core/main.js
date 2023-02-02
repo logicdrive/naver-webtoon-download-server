@@ -3,7 +3,7 @@ function main()
   document.querySelector("#title_search_form").onsubmit = on_Submit_title_Search_Form
   document.querySelector("#zip_download_button").onclick = on_Click_Zip_Download_Button
   document.querySelector("#add_index_button").onclick = on_Click_Add_Index
-  change_Process_Visible_Level(1)
+  Process_Visible_Manager.change_Process_Visible_Level(1)
 }
 
 
@@ -18,7 +18,7 @@ async function on_Submit_title_Search_Form(e)
   const TITLE_RESULTS = await Rest_Api.search_Webtoon_Titles(TITLE_TO_SEARCH)
   if(TITLE_RESULTS.length == 0) throw new Error("검색결과가 존재하지 않습니다! 검색할 웹툰명이 정확한지 확인해주세요!")
 
-  change_Process_Visible_Level(1)
+  Process_Visible_Manager.change_Process_Visible_Level(1)
   update_Title_Results_UI(TITLE_RESULTS)
   Element.add_On_Click_Trigger("#title_search_result_list li", on_Click_Searched_Webtoon_Title)
 }
@@ -36,7 +36,7 @@ async function on_Click_Searched_Webtoon_Title(e)
   const SELECTED_ELEMENT = e.target
   SELECTED_ELEMENT.classList.add("checked")
   SELECTED_ELEMENT.style.background = "lightgray"
-  change_Process_Visible_Level(2)
+  Process_Visible_Manager.change_Process_Visible_Level(2)
 }
 on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
 
@@ -141,7 +141,7 @@ class Index_Manager
     const INDEX_RESULT_HTMLS = Index_Manager._current_index_infos.map((index_info) => `<li class="list-group-item webtoon_index_item" title_id="${title_id}" index="${index_info.index}">${index_info.name}</li>`)
     document.querySelector("#index_search_result_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
     Element.add_On_Click_Trigger("li.webtoon_index_item", Index_Manager._on_Click_Searched_Webtoon_Index)
-    change_Process_Visible_Level(4)
+    Process_Visible_Manager.change_Process_Visible_Level(4)
   }
 
   /** 목차 엘리먼트를 클릭했을 경우, 그 목차를 목록에서 삭제시키기 위해서 */
@@ -152,7 +152,7 @@ class Index_Manager
     Index_Manager._current_index_infos = Index_Manager._current_index_infos.filter((index_info) => index_info.index != SELECTED_INDEX)
 
     if(Index_Manager._current_index_infos.length > 0) Index_Manager._update_Index_Result_UI(TITLE_ID)
-    else change_Process_Visible_Level(2)
+    else Process_Visible_Manager.change_Process_Visible_Level(2)
   }
 }
 
@@ -174,7 +174,7 @@ class Download_Manager
     
     Download_Manager._delete_From_Download_List(ZIP_NAME)
     Download_Manager._update_download_UI()
-    change_Process_Visible_Level(3)
+    Process_Visible_Manager.change_Process_Visible_Level(3)
   }
 
   /** 주어진 타이틀 이름을 이용해서 사용할 zip 이름을 생성시키기 위해서 */
@@ -205,55 +205,57 @@ class Download_Manager
   }
 }
 
-
-/** 진행과정이 보이는 수준을 조절하기 위해서 */
-function change_Process_Visible_Level(visible_level)
+/** 진행과정 블록의 표시여부를 일괄적으로 관리하기 위해서 */
+class Process_Visible_Manager
 {
-  switch(visible_level)
+  /** 진행과정이 보이는 수준을 조절하기 위해서 */
+  static change_Process_Visible_Level(visible_level)
   {
-    // 타이틀 검색 결과까지 모든 과정을 초기상태로 되돌리기 위해서
-    case 1 :
-      document.querySelector("#title_search_result_list").innerHTML = ""
-      Index_Manager.init_Index_Info()
-      change_Visible_Of_Process_Div([true, false, false])
-      return
-
-    // 목차 검색 결과까지의 과정을 초기상태로 되돌리기 위해서
-    case 2 :
-      Index_Manager.init_Index_Info()
-      change_Visible_Of_Process_Div([true, true, false])
-      return
-
-    // 다운로드 결과까지의 과정을 초기 상태로 되돌리기 위해서
-    case 3 :
-      change_Visible_Of_Process_Div([true, true, false])
-      return
-
-    // 모든 과정을 보이도록 하기 위해서
-    case 4 :
-      change_Visible_Of_Process_Div([true, true, true])
-      return
-  }
-}
-
-/** 주어진 리스트의 순서에따라서 각 프로세스 블럭의 표시여부를 변경시키기 위해서 
- *
- *  change_Visible_Of_Process_Div([false, true, true]) // '[1]' 번째 블록이 가려지고, 나머지 블록들이 보이게 됨
- */
-function change_Visible_Of_Process_Div(isvisibles)
-{
-  const PROCESS_DIVS = document.querySelectorAll("div.container > div.row > div")
-  for(let i=0; i<isvisibles.length; i++)
-  {
-    // 다운로드가 진행중인 목록이 있을 경우, 가림 요청을 무시시키기 위해서
-    if(i==2 && document.querySelectorAll("div.container > div.row > div:nth-child(3) > ul > li").length > 0)
+    switch(visible_level)
     {
-      PROCESS_DIVS[i].style.visibility = ""
-      continue
+      // 타이틀 검색 결과까지 모든 과정을 초기상태로 되돌리기 위해서
+      case 1 :
+        document.querySelector("#title_search_result_list").innerHTML = ""
+        Index_Manager.init_Index_Info()
+        Process_Visible_Manager._change_Visible_Of_Process_Div([true, false, false])
+        return
+  
+      // 목차 검색 결과까지의 과정을 초기상태로 되돌리기 위해서
+      case 2 :
+        Index_Manager.init_Index_Info()
+        Process_Visible_Manager._change_Visible_Of_Process_Div([true, true, false])
+        return
+  
+      // 다운로드 결과까지의 과정을 초기 상태로 되돌리기 위해서
+      case 3 :
+        Process_Visible_Manager._change_Visible_Of_Process_Div([true, true, false])
+        return
+  
+      // 모든 과정을 보이도록 하기 위해서
+      case 4 :
+        Process_Visible_Manager._change_Visible_Of_Process_Div([true, true, true])
+        return
     }
-    PROCESS_DIVS[i].style.visibility = (isvisibles[i]) ? "" : "hidden"
   }
+  
+  /** 주어진 리스트의 순서에따라서 각 프로세스 블럭의 표시여부를 변경시키기 위해서 
+   *
+   *  Process_Visible_Manager._change_Visible_Of_Process_Div([false, true, true]) // '[1]' 번째 블록이 가려지고, 나머지 블록들이 보이게 됨
+   */
+  static _change_Visible_Of_Process_Div(isvisibles)
+  {
+    const PROCESS_DIVS = document.querySelectorAll("div.container > div.row > div")
+    for(let i=0; i<isvisibles.length; i++)
+    {
+      // 다운로드가 진행중인 목록이 있을 경우, 가림 요청을 무시시키기 위해서
+      if(i==2 && document.querySelectorAll("div.container > div.row > div:nth-child(3) > ul > li").length > 0)
+      {
+        PROCESS_DIVS[i].style.visibility = ""
+        continue
+      }
+      PROCESS_DIVS[i].style.visibility = (isvisibles[i]) ? "" : "hidden"
+    }
+  }     
 }
-
 
 main()
