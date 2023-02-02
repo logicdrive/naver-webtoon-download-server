@@ -68,23 +68,13 @@ async function on_Click_Zip_Download_Button(_)
   if(SELECTED_WEBTOON_INFOS.length == 0)
     throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
 
-  const CONTENT_NAME = document.querySelector("li.webtoon_title_item[class*='checked']").textContent
-  const CURRENT_DATE_STR = Date_Lib.date_To_String(Date_Lib.date_Now(), "yyyyMMdd_hhmmss")
-  const ZIP_NAME = `${CONTENT_NAME}_${CURRENT_DATE_STR}.zip`
-  
-  document.querySelector("#download_process_list").innerHTML = `<li class="list-group-item">파일명 : ${ZIP_NAME}<br/>진행상태 : 다운로드 진행중...</li>`
-  Index_Manager.init_Index_Info()
-  
+  const TITLE_NAME = document.querySelector("li.webtoon_title_item[class*='checked']").textContent
   const TITLE_ID = document.querySelector("li.webtoon_title_item[class*='checked']").getAttribute("title_id")
   const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(SELECTED_WEBTOON_INFOS).map((sel) => {
       return {title_id:TITLE_ID, index:sel.getAttribute("index"), directory_name:sel.textContent}
   })
 
-  const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
-  Browser.download_File(ZIP_DATA_URL, ZIP_NAME)
-  
-  document.querySelector("#download_process_list").innerHTML = ""
-  change_Process_Visible_Level(3)
+  await Download_Manager.download_Webtoons(WEBTOON_INFOS_TO_DOWNLOAD, TITLE_NAME)
 }
 on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
 
@@ -163,6 +153,55 @@ class Index_Manager
 
     if(Index_Manager._current_index_infos.length > 0) Index_Manager._update_Index_Result_UI(TITLE_ID)
     else change_Process_Visible_Level(2)
+  }
+}
+
+/** 다운로드 UI 정보들을 일괄적으로 관리하기 위해서 */
+class Download_Manager
+{
+  static _current_download_infos = []
+
+  /** 주어진 웹툰 정보들을 기반으로 다운로드를 수행하기 위해서 */
+  static async download_Webtoons(webtoon_infos, title_name)
+  {  
+    const ZIP_NAME = Download_Manager._get_Download_Zip_Name(title_name)
+    Download_Manager._add_To_Download_List(ZIP_NAME)
+    Download_Manager._update_download_UI()
+    Index_Manager.init_Index_Info()
+    
+    const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(webtoon_infos)
+    Browser.download_File(ZIP_DATA_URL, ZIP_NAME)
+    
+    Download_Manager._delete_From_Download_List(ZIP_NAME)
+    Download_Manager._update_download_UI()
+    change_Process_Visible_Level(3)
+  }
+
+  /** 주어진 타이틀 이름을 이용해서 사용할 zip 이름을 생성시키기 위해서 */
+  static _get_Download_Zip_Name(title_name)
+  {
+    const CURRENT_DATE_STR = Date_Lib.date_To_String(Date_Lib.date_Now(), "yyyyMMdd_hhmmss")
+    const ZIP_NAME = `${title_name}_${CURRENT_DATE_STR}.zip`
+    return ZIP_NAME
+  }
+
+  /** 다운로드 리스트에 다운로드시킬 파일명을 추가시키기 위해서 */
+  static _add_To_Download_List(file_name)
+  {
+    Download_Manager._current_download_infos.push(file_name)
+  }
+
+  /** 다운로드 리스트에서 특정 파일명을 삭제시키기 위해서 */
+  static _delete_From_Download_List(file_name)
+  {
+    Download_Manager._current_download_infos = Download_Manager._current_download_infos.filter((download_info) => download_info != file_name)
+  }
+
+  /** 다운로드 관련 UI를 업데이트시키기 위해서 */
+  static _update_download_UI()
+  {
+    const INDEX_RESULT_HTMLS = Download_Manager._current_download_infos.map((download_info) => `<li class="list-group-item">파일명 : ${download_info}<br/>진행상태 : 다운로드 진행중...</li>`)
+    document.querySelector("#download_process_list").innerHTML = INDEX_RESULT_HTMLS.join('\n')
   }
 }
 
