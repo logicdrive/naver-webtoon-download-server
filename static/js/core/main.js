@@ -24,14 +24,6 @@ async function on_Submit_title_Search_Form(e)
 }
 on_Submit_title_Search_Form = Wrap.wrap_With_Try_Alert_Promise(on_Submit_title_Search_Form)
 
-/** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
-function update_Title_Results_UI(title_results)
-{
-  const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
-    `<li class="list-group-item webtoon_title_item" title_id="${title_result.title_id}">${title_result.title}</li>`)
-  document.querySelector("#title_search_result_list").innerHTML = TITLE_RESULT_HTMLS.join('\n')
-}
-
 /** 검색된 웹툰 제목을 클릭할 경우, 그 웹툰에 관련된 목차를 출력하기 위해서 */
 async function on_Click_Searched_Webtoon_Title(e)
 {
@@ -47,7 +39,6 @@ async function on_Click_Searched_Webtoon_Title(e)
   change_Process_Visible_Level(2)
 }
 on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(on_Click_Searched_Webtoon_Title)
-
 
 /** 입력한 화수들에 대한 정보를 다운받을 화수들 목록에 추가시키기 위해서 */
 async function on_Click_Add_Index(_)
@@ -69,6 +60,38 @@ async function on_Click_Add_Index(_)
   document.querySelector("input#end_index").value = ""
 }
 on_Click_Add_Index = Wrap.wrap_With_Try_Alert_Promise(on_Click_Add_Index)
+
+/** 선택된 웹툰 및 화수들을 .zip로 압축해서 다운받도록하기 위해서 */
+async function on_Click_Zip_Download_Button(_)
+{
+  const SELECTED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item")
+  if(SELECTED_WEBTOON_INFOS.length == 0)
+    throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
+
+  document.querySelector("#download_process_list").innerHTML = `<li class="list-group-item">다운로드 진행중..</li>`
+  Index_Manager.init_Index_Info()
+
+  const TITLE_ID = document.querySelector("li.webtoon_title_item[class*='checked']").getAttribute("title_id")
+  const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(SELECTED_WEBTOON_INFOS).map((sel) => {
+      return {title_id:TITLE_ID, index:sel.getAttribute("index")}
+  })
+  const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
+  Browser.download_File(ZIP_DATA_URL, "download.zip")
+  
+  document.querySelector("#download_process_list").innerHTML = ""
+  change_Process_Visible_Level(3)
+}
+on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
+
+
+/** 웹툰 제목 검색 결과를 UI에 업데이트시키기 위해서 */
+function update_Title_Results_UI(title_results)
+{
+  const TITLE_RESULT_HTMLS = title_results.map((title_result) => 
+    `<li class="list-group-item webtoon_title_item" title_id="${title_result.title_id}">${title_result.title}</li>`)
+  document.querySelector("#title_search_result_list").innerHTML = TITLE_RESULT_HTMLS.join('\n')
+}
+
 
 /** 목차 UI 초기화, 조회등을 일괄적으로 수행하기 위해서 */
 class Index_Manager
@@ -137,29 +160,6 @@ class Index_Manager
     else change_Process_Visible_Level(2)
   }
 }
-
-
-/** 선택된 웹툰 및 화수들을 .zip로 압축해서 다운받도록하기 위해서 */
-async function on_Click_Zip_Download_Button(_)
-{
-  const SELECTED_WEBTOON_INFOS = document.querySelectorAll("li.webtoon_index_item")
-  if(SELECTED_WEBTOON_INFOS.length == 0)
-    throw new Error("다운로드 받을 웹툰 및 화수를 선택해주세요 !")
-
-  document.querySelector("#download_process_list").innerHTML = `<li class="list-group-item">다운로드 진행중..</li>`
-  Index_Manager.init_Index_Info()
-
-  const TITLE_ID = document.querySelector("li.webtoon_title_item[class*='checked']").getAttribute("title_id")
-  const WEBTOON_INFOS_TO_DOWNLOAD = Object.values(SELECTED_WEBTOON_INFOS).map((sel) => {
-      return {title_id:TITLE_ID, index:sel.getAttribute("index")}
-  })
-  const ZIP_DATA_URL = await Rest_Api.data_Url_From_Webtoons_Zip(WEBTOON_INFOS_TO_DOWNLOAD)
-  Browser.download_File(ZIP_DATA_URL, "download.zip")
-  
-  document.querySelector("#download_process_list").innerHTML = ""
-  change_Process_Visible_Level(3)
-}
-on_Click_Zip_Download_Button = Wrap.wrap_With_Try_Alert_Promise(on_Click_Zip_Download_Button)
 
 
 /** 진행과정이 보이는 수준을 조절하기 위해서 */
