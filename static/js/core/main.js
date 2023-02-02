@@ -121,7 +121,7 @@ class Index_Manager
     }
 
     const INDEX_INFOS = await Rest_Api.search_Index_Infos(title_id, start_index, end_index)
-    Index_Manager.update_Current_Index_Infos(INDEX_INFOS)
+    Index_Manager._update_Current_Index_Infos(INDEX_INFOS)
     Index_Manager._update_Index_Result_UI(title_id)
   }
 
@@ -129,12 +129,12 @@ class Index_Manager
   static async add_Index_Info(title_id, index)
   {
     const INDEX_INFOS = await Rest_Api.search_Index_Infos(title_id, index, index)
-    Index_Manager.update_Current_Index_Infos(INDEX_INFOS)
+    Index_Manager._update_Current_Index_Infos(INDEX_INFOS)
     Index_Manager._update_Index_Result_UI(title_id)
   }
 
   /** 검색된 목차 정보를 기반으로 다운로드시킬 목차들의 목록을 업데이트하기 위해서 */
-  static async update_Current_Index_Infos(index_infos)
+  static async _update_Current_Index_Infos(index_infos)
   {
     const CURRENT_INDEX_INFO_INDEXES = Index_Manager._current_index_infos.map((index_info) => index_info.index)
     for(let index_info of index_infos)
