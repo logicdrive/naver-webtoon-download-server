@@ -6,7 +6,7 @@ import fs from "fs"
 
 const PORT = 80
 
-// EXPRESS APP에 라우터들을 등록하고 포트 개방을 하기 위해서
+/** EXPRESS APP에 라우터들을 등록하고 포트 개방을 하기 위해서 */
 async function main()
 {  
   init_Environment()
@@ -28,7 +28,7 @@ function init_Environment()
     fs.mkdirSync("./downloads")   
 }
 
-// Express 앱에 외부 라이브러리 라우터를 부착하기 위해서
+/** Express 앱에 외부 라이브러리 라우터를 부착하기 위해서 */
 function add_External_Routers_To_App(app)
 {
   app.use(express.static('static')) // 정적 파일에 대한 직접 접근 경로 생성
@@ -36,7 +36,7 @@ function add_External_Routers_To_App(app)
   app.use(bodyParser.json())
 }
 
-// Express 앱에 routers/api 이하의 REST API 경로 라우터를 부착하기 위해서
+/** Express 앱에 routers/api 이하의 REST API 경로 라우터를 부착하기 위해서 */
 async function add_Api_Routers_To_App(app)
 {
   const ROUTER_API_PATHS = await util.promisify(glob)("./routers/api/**/*.js")
