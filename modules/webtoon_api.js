@@ -1,5 +1,6 @@
 import url from "url"
 import Element from "./element.js"
+import Dictionary_Array from "./dictionary_array.js"
 
 /** 네이버 웹툰 서버와의 일관성있는 통신 인터페이스를 제공하기 위한 라이브러리 */
 class Webtoon_Api
@@ -13,7 +14,7 @@ class Webtoon_Api
                             const TITLE_ID = url.parse($(e).attr("href"), true).query.titleId
                             return {title:TITLE, title_id:TITLE_ID} 
                           })
-    return TITLE_INFOS
+    return Dictionary_Array.unique_Dictionary_Array(TITLE_INFOS)
   }
 
   /** 주어진 웹툰 타이틀 ID의 인덱스와 매칭되는 목차명을 반환시키기 위해서 */
