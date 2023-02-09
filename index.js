@@ -2,12 +2,15 @@ import util from "util"
 import express from "express"
 import bodyParser from "body-parser"
 import glob from "glob"
+import fs from "fs"
 
 const PORT = 80
 
 // EXPRESS APP에 라우터들을 등록하고 포트 개방을 하기 위해서
 async function main()
-{
+{  
+  init_Environment()
+  
   const app = express()
 
   add_External_Routers_To_App(app)
@@ -15,6 +18,14 @@ async function main()
 
   app.get('/', (_, res) => { res.redirect("/html/main.html") })
   app.listen(PORT, () => console.log(`웹 서버가 ${PORT} 포트에서 가동됨`))    
+}
+
+/** 초기 실행환경을 세팅시키기 위해서 */
+function init_Environment()
+{
+  // 다운로드 환경을 세팅하기 위해서
+  if(!fs.existsSync("./downloads"))
+    fs.mkdirSync("./downloads")   
 }
 
 // Express 앱에 외부 라이브러리 라우터를 부착하기 위해서
