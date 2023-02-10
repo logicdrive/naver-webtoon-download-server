@@ -9,6 +9,15 @@ class Array_Lib
         if(value == search_value) count += 1
     return count
   }
+
+  /** 주어진 배열을 주어진 범위만큼 자른 2차원 배열을 반환시킴 */
+  static range_Split(array, range)
+  {
+    let range_split_array = []
+    for(let index=0; index<array.length; index+=range)
+      range_split_array.push(array.slice(index, index+range))
+    return range_split_array
+  }
 }
 
 export default Array_Lib
