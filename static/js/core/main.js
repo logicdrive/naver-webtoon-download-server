@@ -96,6 +96,7 @@ class Title_Manager
     Process_Visible_Manager.change_Process_Visible_Level(2)
   }
 }
+Title_Manager._on_Click_Searched_Webtoon_Title = Wrap.wrap_With_Try_Alert_Promise(Title_Manager._on_Click_Searched_Webtoon_Title)
 
 
 /** 목차 UI 초기화, 조회등을 일괄적으로 수행하기 위해서 */
@@ -165,6 +166,7 @@ class Index_Manager
     else Process_Visible_Manager.change_Process_Visible_Level(2)
   }
 }
+Index_Manager._on_Click_Searched_Webtoon_Index = Wrap.wrap_With_Try_Alert_Promise(Index_Manager._on_Click_Searched_Webtoon_Index)
 
 
 /** 다운로드 UI 정보들을 일괄적으로 관리하기 위해서 */
