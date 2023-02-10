@@ -2,6 +2,8 @@ import fs from "fs"
 import Webtoon_Api from "./webtoon_api.js"
 import Request from "./request.js"
 import Promise_Lib from "./promise.js"
+import Dictionary_Array from "./dictionary_array.js"
+import Iter from "./iter.js"
 
 /** webtoon_api를 활용한 더 고수준의 행위들을 추상화시키기 위한 라이브러리 */
 class Webtoon_Service
@@ -20,6 +22,19 @@ class Webtoon_Service
         })
       })
     })
+  }
+
+  /** 주어진 타이틀의 특정 범위에 속하는 인덱스 정보들을 정렬된 순서대로 반환시키기 위해서 */
+  static async index_Infos_By_Range(title_id, start_index, end_index, parallel_degree=5)
+  {
+    let index_infos = []
+    await Promise_Lib.parallel_Processing(Iter.range(start_index, end_index+1), parallel_degree, (resolve, index) => {
+      Webtoon_Api.get_Index_Name(title_id, index).then((index_name) => {
+        index_infos.push({index:index, name:`${index} : ${index_name}`})
+        resolve()
+      })
+    })    
+    return Dictionary_Array.sort_By_Key(index_infos, "index")
   }
 }
 

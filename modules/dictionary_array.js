@@ -26,6 +26,14 @@ class Dictionary_Array
     const IS_KEY_VAL_EQUAL = Object.keys(dic_1).map((key) => dic_1[key] == dic_2[key])
     return Array_Lib.count_Value(IS_KEY_VAL_EQUAL, true) == IS_KEY_VAL_EQUAL.length
   }
+
+  /** 딕셔너리의 특정 키를 기준으로 정렬시키기 위해서 */
+  static sort_By_Key(array, key_name)
+  {
+    return array.sort(function(dic_1, dic_2) {
+      return dic_1[key_name] - dic_2[key_name]
+    })
+  }
 }
 
 export default Dictionary_Array

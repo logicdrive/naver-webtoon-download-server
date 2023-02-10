@@ -1,7 +1,7 @@
 import express from "express"
 import Wrap from "../../../modules/wrap.js"
 import Params_Check from "../../../modules/params_check.js"
-import Webtoon_Api from "../../../modules/webtoon_api.js"
+import Webtoon_Service from "../../../modules/webtoon_service.js"
 
 async function get_Router_callback(req, res)
 {
@@ -10,14 +10,8 @@ async function get_Router_callback(req, res)
   const START_INDEX = Number(req.query.start_index)
   const END_INDEX = Number(req.query.end_index)
 
-  let index_infos = []
-  for(let index=START_INDEX; index<=END_INDEX; index++)
-  {
-    const INDEX_NAME = await Webtoon_Api.get_Index_Name(TITLE_ID, index)
-    index_infos.push({index:index, name:`${index} : ${INDEX_NAME}`})
-  }
-  
-  res.json({is_error:false, index_infos:index_infos})
+  const INDEX_INFOS = await Webtoon_Service.index_Infos_By_Range(TITLE_ID, START_INDEX, END_INDEX)
+  res.json({is_error:false, index_infos:INDEX_INFOS})
 }
 get_Router_callback = Wrap.wrap_With_Try_Res_Promise(get_Router_callback)
 
